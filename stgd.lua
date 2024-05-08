@@ -299,10 +299,12 @@ local function stargatedetect()
     while true do
         local event = {os.pullEvent()}
         if (event[1] == "stargate_incoming_wormhole") then
-            redstonei.setOutput("north",false)
+            if (redstonei ~= nil) then
+                redstonei.setOutput("north",false)
+            end
             local addresst = addressLookupCached(event[2])
             log("Incoming Wormhole From "..addresst.name)
-            if (stargateDisallowed or radar.getPlayerPos(config.owner) ~= nil) then
+            if (stargateDisallowed or radar.getPlayerPos(config.owner) == nil) then
                 monitor.setTextColor(colors.lightBlue)
                 sendvisual("Denied Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
@@ -324,9 +326,9 @@ local function stargatedetect()
             sendvisual("Outgoing Wormhole To ")
             monitor.setTextColor(colors.yellow)
             sendvisual(addresst.name)
-        elseif (event[1] == "stargate_chevron_engaged" and event[4]) then
+        elseif (event[1] == "stargate_chevron_engaged" and event[4] and redstonei ~= nil) then
                 redstonei.setOutput("north",true)
-        elseif (event[1] == "stargate_reset") then
+        elseif (event[1] == "stargate_reset" and redstonei ~= nil) then
             redstonei.setOutput("north",false)
         elseif (event[1] == "stargate_deconstructing_entity" and event[5] == true) then
             ci.disconnectStargate()
