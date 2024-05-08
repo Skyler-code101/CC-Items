@@ -306,7 +306,7 @@ end
 local Connectedaddress = "Not Connected"
 local connectedaddressname = "Not Connected"
 local direction = "Not Connected"
-
+local owneronline = false
 local function stargatedetect()
     while true do
         local event = {os.pullEvent()}
@@ -317,7 +317,7 @@ local function stargatedetect()
             local addresst = addressLookupCached(event[2])
             
             log("Incoming Wormhole From "..addresst.name)
-            if (stargateDisallowed or radar.getPlayerPos(config.owner) == nil) then
+            if (stargateDisallowed or owneronline == false) then
                 monitor.setTextColor(colors.lightBlue)
                 sendvisual("Denied Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
@@ -359,9 +359,13 @@ local function stargatedetect()
     end 
 end
 
-local function keybinds()
+local function printoutterm()
 	while true do
     term.clear()
+    if (owneronline == false) then
+        term.setTextColor(colors.orange)
+        print("Termanal Locked")
+    end
     term.setTextColor(colors.green)
     print("Welcome To the STGD (Security Transport Gate Device) \n I Am Your Security Termanal \n \n")
     term.setTextColor(colors.lightBlue)
@@ -375,20 +379,24 @@ local function keybinds()
     end
     
 end
-local function printoutterm()
+local function keybinds()
     while true do
-	    local event = {os.pullEvent()}
+    	local event = {os.pullEvent()}
+        owneronline = radar.isPlayerInRange(config.range or 100, config.owner)
+        if (owneronline) then
+
             if (event[1] == "mouse_click" and event[4] == 14) then
-               if (stargateDisallowed) then
-                stargateDisallowed = false
-               else
-                stargateDisallowed = true
-               end
+                if (stargateDisallowed) then
+                    stargateDisallowed = false
+                else
+                    stargateDisallowed = true
+                end
             elseif (event[1] == "mouse_click" and event[4] == 16) then
                 ci.disconnectStargate()
             elseif (event[1] == "mouse_click" and event[4] == 18) then
                 monitor.clear()
                 linenu = 0
+            end
         end
     end
 end
