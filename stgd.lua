@@ -302,7 +302,7 @@ local function stargatedetect()
             redstonei.setOutput("north",false)
             local addresst = addressLookupCached(event[2])
             log("Incoming Wormhole From "..addresst.name)
-            if (stargateDisallowed) then
+            if (stargateDisallowed or radar.getPlayerPos(config.owner) ~= nil) then
                 monitor.setTextColor(colors.lightBlue)
                 sendvisual("Denied Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
