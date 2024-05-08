@@ -28,13 +28,15 @@ local args = {...}
 local config = {}
 
 if args[1] == "config" or not fs.exists("/config_cess.txt") then
-    print("Welcome to the configuration wizard!")
+    term.setTextColor(colors.green)
+    print("Welcome to your STGD (Security Transport Gate Device) Setup Screen")
+    term.setTextColor(colors.blue)
     print("Name of this area?")
     config.name = read()
-
+    term.setTextColor(colors.blue)
     print("Range? (in blocks)")
     config.range = tonumber(read())
-
+    term.setTextColor(colors.blue)
     print("Startup with computer? (y/n)")
     config.autostart = read():lower()
     if config.autostart == "y" then
@@ -46,10 +48,10 @@ if args[1] == "config" or not fs.exists("/config_cess.txt") then
         config.autostart = false
         fs.delete("/startup")
     end
-
+    term.setTextColor(colors.blue)
     print("Owner Name? (ignored by detection, and used for chat)")
     config.owner = read()
-
+    term.setTextColor(colors.blue)
     print("Discord Integration? (y/n)")
     config.isDiscord = read():lower()
     if config.isDiscord == "y" then
@@ -59,7 +61,7 @@ if args[1] == "config" or not fs.exists("/config_cess.txt") then
     else
         config.isDiscord = false
     end
-
+    term.setTextColor(colors.blue)
     print("Chatbox Integration? (y/n)")
     config.isChatbox = read():lower()
     if config.isChatbox == "y" then
@@ -67,7 +69,7 @@ if args[1] == "config" or not fs.exists("/config_cess.txt") then
     else
         config.isChatbox = false
     end
-
+    term.setTextColor(colors.blue)
     print("Address Book Computer ID")
     config.address_book_id = tonumber(read())
 
@@ -151,7 +153,7 @@ local chat_queue = {}
 
 local function log(text)
     if use_discord then
-        discord_hook.send(text, "CTSSD - "..(config.name or "Unknown"))
+        discord_hook.send(text, "STGD - "..(config.name or "Unknown"))
     end
     if use_chatbox then
         chat_queue[#chat_queue+1] = {text=text}
@@ -183,7 +185,7 @@ local function logPlayers(data)
     end
 
     if use_discord then
-        discord_hook.send(discord_text, "CTSSD: "..(config.name or "Unknown"))
+        discord_hook.send(discord_text, "STGD: "..(config.name or "Unknown"))
     end
 
     local chat_text = ""
@@ -336,7 +338,7 @@ local function keybinds()
 	while true do
     term.clear()
     term.setTextColor(colors.green)
-    print("Welcome To the CTSSD \n I Am Your Security Termanal \n \n")
+    print("Welcome To the STGD (Security Transport Gate Device) \n I Am Your Security Termanal \n \n")
     term.setTextColor(colors.blue)
     print("Stargate Lock : "..tostring(stargateDisallowed).."\n")
     term.setTextColor(colors.red)
