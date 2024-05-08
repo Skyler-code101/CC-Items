@@ -294,6 +294,18 @@ local function playerRadar()
         sleep(0.5)
     end
 end
+local function readaddress(address)
+    local finished = ""
+    for _,v in ipairs(address) do
+        finished = finished..v.." "
+    end
+    return finished
+end
+
+
+local Connectedaddress = "Not Connected"
+local connectedaddressname = "Not Connected"
+local direction = "Not Connected"
 
 local function stargatedetect()
     while true do
@@ -303,6 +315,7 @@ local function stargatedetect()
                 redstonei.setOutput("north",false)
             end
             local addresst = addressLookupCached(event[2])
+            
             log("Incoming Wormhole From "..addresst.name)
             if (stargateDisallowed or radar.getPlayerPos(config.owner) == nil) then
                 monitor.setTextColor(colors.lightBlue)
@@ -319,6 +332,9 @@ local function stargatedetect()
                 monitor.setTextColor(colors.yellow)
                 sendvisual(addresst.name)
             end
+            Connectedaddress = readaddress(event[2])
+            connectedaddressname = addresst.name
+            direction = 'Incoming'
         elseif (event[1] == "stargate_outgoing_wormhole") then
             monitor.setTextColor(colors.blue)
             local addresst = addressLookupCached(event[2])
@@ -326,12 +342,19 @@ local function stargatedetect()
             sendvisual("Outgoing Wormhole To ")
             monitor.setTextColor(colors.yellow)
             sendvisual(addresst.name)
+            Connectedaddress = readaddress(event[2])
+            connectedaddressname = addresst.name
+            direction = 'Outgoing'
         elseif (event[1] == "stargate_chevron_engaged" and event[4] and redstonei ~= nil) then
                 redstonei.setOutput("north",true)
         elseif (event[1] == "stargate_reset" and redstonei ~= nil) then
             redstonei.setOutput("north",false)
         elseif (event[1] == "stargate_deconstructing_entity" and event[5] == true) then
             ci.disconnectStargate()
+        elseif (event[1] == "stargate_disconnected") then
+            Connectedaddress = "Not Connected"
+            connectedaddressname = "Not Connected"
+            direction = 'Not Connected'
         end
     end 
 end
@@ -341,28 +364,35 @@ local function keybinds()
     term.clear()
     term.setTextColor(colors.green)
     print("Welcome To the STGD (Security Transport Gate Device) \n I Am Your Security Termanal \n \n")
+    term.setTextColor(colors.lightBlue)
+    print("Current Address : "..Connectedaddress.."\nCurrent Address Name : "..connectedaddressname.."\nDirection : "..direction.."\n")
     term.setTextColor(colors.blue)
     print("Stargate Lock : "..tostring(stargateDisallowed).."\n")
     term.setTextColor(colors.red)
     print("Discoonnect Stargate \n")
     print("Clear Monitor ")
-
-    local event = {os.pullEvent()}
-        if (event[1] == "mouse_click" and event[4] == 14) then
-            if (stargateDisallowed) then
+    sleep(.1)
+    end
+    
+end
+local function printoutterm()
+    while true do
+	    local event = {os.pullEvent()}
+            if (event[1] == "mouse_click" and event[4] == 14) then
+               if (stargateDisallowed) then
                 stargateDisallowed = false
-            else
+               else
                 stargateDisallowed = true
-            end
-        elseif (event[1] == "mouse_click" and event[4] == 16) then
-            ci.disconnectStargate()
-        elseif (event[1] == "mouse_click" and event[4] == 18) then
-            monitor.clear()
-            linenu = 0
+               end
+            elseif (event[1] == "mouse_click" and event[4] == 16) then
+                ci.disconnectStargate()
+            elseif (event[1] == "mouse_click" and event[4] == 18) then
+                monitor.clear()
+                linenu = 0
         end
     end
 end
 
-parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds)
+parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm)
 
 -- Helped By JajaSteele
