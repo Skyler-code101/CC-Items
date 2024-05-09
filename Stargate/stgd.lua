@@ -326,18 +326,16 @@ local function stargatedetect()
                     sleep()
                 until ci.isStargateConnected() and ci.isWormholeOpen()
                 ci.disconnectStargate()
-                Connectedaddress = "Not Connected"
-                connectedaddressname = "Not Connected"
-                direction = 'Not Connected'
             else 
-            monitor.setTextColor(colors.blue)
+                monitor.setTextColor(colors.blue)
                 sendvisual("Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
                 sendvisual(addresst.name)
+                Connectedaddress = readaddress(event[2])
+                connectedaddressname = addresst.name
+                direction = 'Incoming'
             end
-            Connectedaddress = readaddress(event[2])
-            connectedaddressname = addresst.name
-            direction = 'Incoming'
+            
         elseif (event[1] == "stargate_outgoing_wormhole") then
             monitor.setTextColor(colors.blue)
             local addresst = addressLookupCached(event[2])
