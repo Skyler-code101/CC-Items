@@ -317,7 +317,7 @@ local function stargatedetect()
             local addresst = addressLookupCached(event[2])
             
             log("Incoming Wormhole From "..addresst.name)
-            if (stargateDisallowed or owneronline == false) then
+            if (stargateDisallowed or radar.getPlayerPos(config.owner)['x'] == nil) then
                 monitor.setTextColor(colors.lightBlue)
                 sendvisual("Denied Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
@@ -326,6 +326,9 @@ local function stargatedetect()
                     sleep()
                 until ci.isStargateConnected() and ci.isWormholeOpen()
                 ci.disconnectStargate()
+                Connectedaddress = "Not Connected"
+                connectedaddressname = "Not Connected"
+                direction = 'Not Connected'
             else 
             monitor.setTextColor(colors.blue)
                 sendvisual("Incoming Wormhole From")
