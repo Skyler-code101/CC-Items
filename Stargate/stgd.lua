@@ -250,7 +250,7 @@ local function chatManager()
     while true do
         local to_delete = {}
         for k,v in ipairs(chat_queue) do
-            local is_sent = chatbox.sendMessageToPlayer(v.text, config.owner, "\xA7bCESS\xA7f-\xA7d"..(config.name or "Unknown").."\xA7f")
+            local is_sent = chatbox.sendMessageToPlayer(v.text, config.owner, "\xA7bSTGD\xA7f-\xA7d"..(config.name or "Unknown").."\xA7f")
             if is_sent then
                 to_delete[#to_delete+1] = k
             end
