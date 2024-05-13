@@ -113,9 +113,8 @@ local function getDate(timeOnly)
         return os.date("%d/%m %H.%M.%S")
     end
 end
-
+local address_cache = {}
 local function addressLookupCached(lookup_value)
-    local address_cache = {}
     if not lookup_value then
         return {name="Unknown Address"}
     end
