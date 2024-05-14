@@ -69,5 +69,6 @@ local function energyload()
 		sleep(.1)
 	end
 end
+print("Server Up")
 
 parallel.waitForAll(energyload,findenergy,rednetcontrol)
