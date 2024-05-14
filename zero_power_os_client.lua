@@ -3,30 +3,28 @@ local monitor = peripheral.find("monitor")
 if modem then
     rednet.open(peripheral.getName(modem))
 end
-local percent = 0
-local npercent = 0
-local energy = 0
-local nenergy = 0
+
+local percent = ""
+local npercent = ""
+local energy = ""
+local nenergy = ""
 
 function receivedata()
 	while true do
         local event = {os.pullEvent("rednet_message")}
-            local message = event[3]
-            message["p"] = percent
-            message["np"] = npercent
-            message["e"] = energy
-            message["ne"] = nenergy
-            print(percent)
+        if (event[4] == "zeroSPTD" and event[2] == 491) then
+            local message = textutils.unserialize(event[3])
+            percent = tostring(message["p"])
+            npercent = tostring(message["np"])
+            energy = tostring(message["e"])
+            nenergy = tostring(message["ne"])
+        end
     end
 end
 local linenu = 0
 local function monprint(text)
-    local w,h = monitor.getSize()
-    if (linenu == h-1) then
-        monitor.clear()
 
-        linenu = 0
-    end
+    local w,h = monitor.getSize()
     linenu = linenu + 1
     monitor.setCursorPos(1,linenu)
     monitor.write(text)
@@ -35,27 +33,36 @@ local function printdata()
     while true do
         if (monitor == nil) then
             term.clear()
+		    term.setTextColor(colors.green)
             print("Hello Welcome To ZeroSPTD Client Mode\n\n\n")
-            print("Power Held Percentage : "..tostring(percent).."%\n")
-            print("Network Power Percentage : "..tostring(npercent).."%\n\n")
-            print("Power Held : "..tostring(energy).."FE\n")
-            print("Network Power : "..tostring(nenergy).."FE\n")
-            sleep(.1)
+            term.setTextColor(colors.blue)
+            print("Power Held Percentage : "..percent.."%\n")
+            print("Network Power Percentage : "..npercent.."%\n\n")
+		    term.setTextColor(colors.lightBlue)
+            print("Power Held : "..energy.."FE\n")
+            print("Network Power : "..nenergy.."FE\n")
+        sleep(.3)
         else
+            linenu = 0
             monitor.clear()
-            monprint("Hello Welcome To ZeroSPTD Client Mode")
+		    monitor.setTextColor(colors.green)
+            monprint("Hello Welcome To ZeroSPTD ")
+            monprint("Client Mode")
+            monprint("") 
             monprint("")
+		    monitor.setTextColor(colors.blue)
+            monprint("Power Held Percentage : "..percent.."%")
+            monprint("Network Power Percentage : "..npercent.."%")
+		    monitor.setTextColor(colors.lightBlue)
             monprint("")
-            monprint("Power Held Percentage : "..tostring(percent).."%")
-            monprint("Network Power Percentage : "..tostring(npercent).."%")
-            monprint("")
-            monprint("Power Held : "..tostring(energy).."FE")
-            monprint("Network Power : "..tostring(nenergy).."FE")
-            sleep(.1)
+            monprint("Power Held : "..energy.."FE")
+            monprint("Network Power : "..nenergy.."FE")
+            
+        sleep(.3)
         end
     end
 end
 
 
 
-parallel.waitForAll(receivedata)
+parallel.waitForAll(receivedata,printdata)

@@ -25,26 +25,34 @@ end
 local function rednetcontrol()
 	while true do
 		local t = {p=percent,np=npercent,e=energy,ne=nenergy}
-
-		rednet.broadcast(t,"zeroSPTD")	
+		local ts = textutils.serialize(t)
+		rednet.broadcast(ts,"zeroSPTD")	
 		sleep(.1)
 	end
 end
+local function monprint(text)
+
+    local w,h = monitor.getSize()
+    linenu = linenu + 1
+    monitor.setCursorPos(1,linenu)
+    monitor.write(text)
+end
 local function findenergy()
 	while true do
-		monitor.clear()
-		if (percent == 100) then
-			monitor.setCursorPos(1 , h/2)
-			monitor.write("Power Full")
-		elseif (percent == 0) then
-			monitor.setCursorPos(1 , h/2)
-			monitor.write("ERROR Power Dead")
-		else 
-			monitor.setCursorPos(1  , h/2)
-			monitor.write("Power : "..tostring(percent).."%")
-			
-		end
-
+        linenu = 0
+        monitor.clear()
+		monitor.setTextColor(colors.red)
+        monprint("Hello Welcome To ZeroSPTD ")
+        monprint("Server Mode")
+        monprint("")
+        monprint("")
+		monitor.setTextColor(colors.blue)
+        monprint("Power Held Percentage : "..tostring(percent).."%")
+        monprint("Network Power Percentage : "..tostring(npercent).."%")
+        monprint("")
+		monitor.setTextColor(colors.lightBlue)
+        monprint("Power Held : "..tostring(energy).."FE")
+        monprint("Network Power : "..tostring(nenergy).."FE")
 		sleep(.1)
 	end
 end
