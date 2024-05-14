@@ -11,8 +11,9 @@ if not fs.exists("/DiscordHook.lua") then
     file2:close()
     file.close()
 end
-local modems = {peripheral.find("modem")}
+
 local redstonei = peripheral.find("redstoneIntegrator")
+local modems = {peripheral.find("modem")}
 local modem
 
 for k,v in pairs(modems) do
@@ -22,6 +23,7 @@ for k,v in pairs(modems) do
 end
 if modem then
     rednet.open(peripheral.getName(modem))
+    rednet.host("zeroSPTD", tostring(os.getComputerID()))
 end
 local args = {...}
 
