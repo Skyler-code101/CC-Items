@@ -23,7 +23,6 @@ for k,v in pairs(modems) do
 end
 if modem then
     rednet.open(peripheral.getName(modem))
-    rednet.host("zeroSPTD", tostring(os.getComputerID()))
 end
 local args = {...}
 
@@ -121,7 +120,7 @@ local function addressLookupCached(lookup_value)
         return {name="Unknown Address"}
     end
 
-    local id_to_send = config.address_book_id or 273
+    local id_to_send = config.address_book_id
     if type(lookup_value) == "string" then
         if address_cache[lookup_value] then
             return address_cache[lookup_value]

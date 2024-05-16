@@ -19,14 +19,14 @@ for k,v in pairs(modems) do
 end
 if modem then
 	rednet.open(peripheral.getName(modem))
-    rednet.host("zeroSPTD", tostring(os.getComputerID()))
+    rednet.host("zeroSPTN", tostring(os.getComputerID()))
     modem.open(2707)
 end
 local function rednetcontrol()
 	while true do
 		local t = {p=percent,np=npercent,e=energy,ne=nenergy}
 		local ts = textutils.serialize(t)
-		rednet.broadcast(ts,"zeroSPTD")	
+		rednet.broadcast(ts,"zeroSPTN")	
 		sleep(.1)
 	end
 end
@@ -39,21 +39,28 @@ local function monprint(text)
 end
 local function findenergy()
 	while true do
-        linenu = 0
-        monitor.clear()
-		monitor.setTextColor(colors.red)
-        monprint("Hello Welcome To ZeroSPTD ")
-        monprint("Server Mode")
-        monprint("")
-        monprint("")
-		monitor.setTextColor(colors.blue)
-        monprint("Power Held Percentage : "..tostring(percent).."%")
-        monprint("Network Power Percentage : "..tostring(npercent).."%")
-        monprint("")
-		monitor.setTextColor(colors.lightBlue)
-        monprint("Power Held : "..tostring(energy).."FE")
-        monprint("Network Power : "..tostring(nenergy).."FE")
-		sleep(.1)
+            linenu = 0
+            monitor.clear()
+		    monitor.setTextColor(colors.gray)
+			monprint("===========================================================================") 
+		    monitor.setTextColor(colors.red)
+            monprint("Hello Welcome To ZeroSPTN ")
+            monprint("Server Mode")
+		    monitor.setTextColor(colors.gray)
+            monprint("===========================================================================") 
+            monprint("===========================================================================")
+		    monitor.setTextColor(colors.blue)
+            monprint("Power Held Percentage : "..tostring(percent).."%")
+            monprint("Network Power Percentage : "..tostring(npercent).."%")
+		    monitor.setTextColor(colors.gray)
+            monprint("===========================================================================")
+		    monitor.setTextColor(colors.lightBlue)
+            monprint("Power Held : "..tostring(energy).."FE")
+            monprint("Network Power : "..tostring(nenergy).."FE")
+		    monitor.setTextColor(colors.gray)
+            monprint("===========================================================================")
+            monprint("===========================================================================")
+            sleep(.1)
 	end
 end
 local function energyload()
