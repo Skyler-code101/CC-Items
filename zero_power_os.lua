@@ -27,7 +27,7 @@ local function rednetcontrol()
 		local t = {p=percent,np=npercent,e=energy,ne=nenergy}
 		local ts = textutils.serialize(t)
 		rednet.broadcast(ts,"zeroSPTN")	
-		sleep(.1)
+		sleep(1)
 	end
 end
 local function monprint(text)
