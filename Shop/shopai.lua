@@ -6,6 +6,8 @@ local beingcalled = false
 local ownername ="SkylerGaming"
 local offlinebreak = 0
 local sp = peripheral.find("speaker")
+local chatbox = peripheral.find("chatBox")
+
 local function ownerlocation()
     while true do
         if (beingcalled and radar.isPlayerInRange(3, ownername)) then
@@ -33,6 +35,7 @@ local function redstone()
         until redstonei.getInput("south")
         if (radar.getPlayerPos(ownername)['x'] ~= nil) then
             beingcalled = true
+            chatbox.sendMessageToPlayer("A Player Is At Your Store", ownername, "\xA7b\xA7f-\xA7d".."Store".."\xA7f")
         else
             offlinebreak = offlinebreak + 1
         end
