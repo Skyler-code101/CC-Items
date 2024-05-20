@@ -16,7 +16,7 @@ local function ownerlocation()
             sleep(5)
             beingcalled = false
 
-        elseif (beingcalled and radar.getPlayerPos(ownername)['x'] == nil) then
+        elseif ( radar.getPlayerPos(ownername)['x'] == nil) then
             ownerdistance = 2
         elseif (beingcalled == false) then
             ownerdistance = -1
