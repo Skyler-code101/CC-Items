@@ -1,6 +1,7 @@
 local display = peripheral.find("monitor")
-
+local printer = peripheral.find("printer")
 local sp = peripheral.find("speaker")
+local storage = peripheral.wrap("left")
 local tran = {}
 display.clear()
 display.setTextScale(.5)
@@ -12,64 +13,92 @@ local function existsinfile(playername,prime)
     return value
     
 end
+
+
+
 local playername = ""
+local linenu = 2
+local linenup = 1
+local function list(item,amount)
+    if (linenu == 9) then
+        display.clear()
+        display.setCursorPos(1,1)
+        display.write("Customer Name: "..playername)
+        linenu = 2
+    else
+        linenu = linenu+1
+    end
+    linenup = linenup+1
+    display.setCursorPos(1,linenu)
+    display.write(amount.." | "..item)
+    printer.setCursorPos(1,linenup)
+    printer.write(amount.." | "..item)
+end
+function Entry()
+local itemMap = {}
+for slot,v in pairs(storage.list()) do
+    local item = itemMap[v["name"]] or {count=0,displayName=storage.getItemDetail(slot)["displayName"]}
+    item.count = item.count + v["count"]
+    itemMap[v.name] = item
+end
+for id, data in pairs(itemMap) do
+    
+    print(data["count"].." | "..data["displayName"])
+end
+print("Is This Correct?")
+if (read() == "y") then
+    for id, data in pairs(itemMap) do
+        list(data["displayName"],data["count"])
+    end
+    return "done" 
+else 
+    Entry()
+end
+end
 term.setTextColor(colors.green)
 print("Customer Name")
 term.setTextColor(colors.lime)
 playername = read()
 display.setCursorPos(1,1)
-
+printer.newPage()
 display.write("Customer Name: "..playername)
+printer.setCursorPos(1,1)
+printer.write("Customer Name: "..playername)
 handel = fs.open("Transactions/"..playername.."#"..tostring(existsinfile(playername,0))..".txt","w")
-term.setTextColor(colors.green)
-print("Enter Recived Items (Not Amount and Split by commas AKA Incoming)")
-term.setTextColor(colors.lime)
-
-tran.recivedItems = read()
-display.setCursorPos(1,2)
-display.write(tran.recivedItems)
+Entry()
 term.setTextColor(colors.blue)
-print("\n"..tran.recivedItems)
 term.setTextColor(colors.green)
-print("\n\nAmount Of Recived Items (Split By Commas and in order)")
+print("Amount To Charge")
 term.setTextColor(colors.lime)
-tran.amountRI = read()
-display.setCursorPos(1,3)
-display.write(tran.amountRI)
-term.setTextColor(colors.blue)
-print("\n"..tran.recivedItems.."\n"..tran.amountRI)
-term.setTextColor(colors.green)
-print("\n\nItems Traded (The Item You Gave To the Customer and Split By Commas AKA Outgoing)")
-term.setTextColor(colors.lime)
-tran.items = read()
-display.setCursorPos(1,4)
-display.write(tran.items)
-term.setTextColor(colors.blue)
-print("\n"..tran.recivedItems.."\n"..tran.amountRI.."\n"..tran.items)
-term.setTextColor(colors.green)
-print("\n\nAmount Of Traded Items (Split By Commas and in order)")
-term.setTextColor(colors.lime)
-tran.amountI = read()
-display.setCursorPos(1,5)
-display.write(tran.amountI)
+tran.Charge = read()
+display.setCursorPos(1,10)
+display.write("Total Charge: "..tran.Charge)
 term.setTextColor(colors.green)
 print("Complete the Transaction?")
 term.setTextColor(colors.lime)
-if (read() == "y") then
+local v = read()
+if (v == "y") then
     term.setTextColor(colors.yellow)
     print("Transaction Complete")
-    sp.playSound("entity.player.levelup",3.0)
     handel.write(textutils.serialise(tran))
     display.clear()
+    printer.setCursorPos(1,linenup+1)
+    printer.write("Total : "..tran.Charge)
+    printer.endPage()
+    sleep(.5)
     os.reboot()
-elseif (read()=="n") then
+elseif (v=="n") then
     term.setTextColor(colors.red)
     print("Canceled")
     display.clear()
     display.write("Order Voided")
+    printer.setCursorPos(1,linenup+1)
+    printer.write("Order Voided")
+    printer.endPage()
     sleep(.5)
-    os.shutdown()
+    os.reboot()
 else
+    printer.endPage()
     os.reboot()
 end
 
