@@ -1,7 +1,7 @@
 local display = peripheral.find("monitor")
 local printer = peripheral.find("printer")
 local sp = peripheral.find("speaker")
-local storage = peripheral.wrap("left")
+local storage = peripheral.find("sophisticatedstorage:barrel")
 local tran = {}
 display.clear()
 display.setTextScale(.5)

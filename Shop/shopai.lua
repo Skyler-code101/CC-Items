@@ -32,10 +32,10 @@ local function redstone()
     while true do
         repeat
             sleep()
-        until redstonei.getInput("south")
+        until redstonei.getInput("east")
         if (radar.getPlayerPos(ownername)['x'] ~= nil) then
             beingcalled = true
-            chatbox.sendMessageToPlayer("A Player Is At Your Store", ownername, "\xA7b\xA7f-\xA7d".."Store".."\xA7f")
+            chatbox.sendMessageToPlayer("A Player Is At Your Store", ownername, "\xA7b\xA7f\xA7d".."Store".."\xA7f")
         else
             offlinebreak = offlinebreak + 1
         end
@@ -60,7 +60,7 @@ local function printdisplay()
             display.write("Sorry ShopKeeper Is Offline")
         elseif (ownerdistance == 3) then
             display.setTextColor(colors.lightBlue)
-            display.write("ShopKeeper Is Close")
+            display.write("ShopKeeper Is Close By")
         else
             error("something Wrong")
         end
