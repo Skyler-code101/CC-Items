@@ -103,11 +103,11 @@ if (promt == "1") then
         print("Please Enter ECard")
     end
 elseif (promt == "2") then
-print("Loading ECard")
+print("Loading ECard...")
 if (fs.exists("disk/ECard/Data")) then     
     datafile = fs.open("disk/ECard/Data","r")
     data = textutils.unserialise(datafile.readAll())
-    print("Loading Bank Acount")
+    print("Loading Bank Acount...")
     local sendstate ={}
     sendstate.computer = os.getComputerID()
     sendstate.status = "lookup"
@@ -127,35 +127,40 @@ if (fs.exists("disk/ECard/Data")) then
     print("Pin:")
     local pin = tonumber(monitorPinEnter())
     print(tostring(pin))
-    if pin == datar.pin then
-        
-        print("Balance: "..datar.bal)
-        print("Charge Amount:")
-        total = tonumber(read())
-        if (datar.bal >= total and total >= 0) then
-            datar.bal = datar.bal - total
-            datar.status = "change"
-            datar.fulllink = sendstate.id
-            datar.computer = os.getComputerID()
-            ws.send(textutils.serialise(datar))
+    print("Charge Amount:")
+    local charge = tonumber(read())
+    sendstate.computer = os.getComputerID()
+    sendstate.status = "charge"
+    sendstate.id = data.fulllink
+    sendstate.charge = charge
+    sendstate.pin = pin
+    ws.send(textutils.serialise(sendstate))
+    print("Processing...")
+    repeat
+        event, url, message = os.pullEvent("websocket_message")
+        datar = textutils.unserialise(message)
+
+    until (datar.handler == os.getComputerID() and url == myURL)
+    if datar.status == "ReplyAuth" then
+        if datar.ReplyMessage == "Accepted Payment" then
             print("Aproved Payment")
             DisplayMessage("Aproved Payment",colors.green)
-        else
+        elseif datar.ReplyMessage == "Insufficient Funds" then
             DisplayMessage("Declined",colors.red)
             print("Declined : Insufficient Funds")
+        elseif datar.ReplyMessage == "Invalid Pin" then
+            
+            DisplayMessage("Declined",colors.red)
+            print("Declined : Invalid Pin")
         end
-
-    else
-        DisplayMessage("Declined",colors.red)
-        print("Declined : Invalid Pin")
-    end
     end
     
+end
 else
     print("Insert ECard")
 end
 end
-sleep(1)
+sleep(2)
 monitor.clear()
 startup()
 end
