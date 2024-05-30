@@ -71,25 +71,18 @@ if (promt == "1") then
         print("Starting Creation...")
         local Ecardos = fs.open("ECard.lua","r")
         local startupfile = fs.open("disk/startup","w")
-        local id = math.random(10000000, 99999999)
         local datam = {}
         local data = {}
         local event,url,message
         datal.computer = os.getComputerID()
         repeat
             print(datal)
-            datal.fulllink = id
-            datam.fulllink = datal.fulllink
             datam.playername  = datal.playername
             ws.send(textutils.serialise(datal))
             event, url, message = os.pullEvent("websocket_message")
-            data = textutils.unserialise(message) or nil
-            if data ~= nil then
-                if data[status] == "Already made" then 
-                    id = math.random(10000000, 99999999)
-                end
-            end
+            data = textutils.unserialise(message)
         until (data ~= nil and data.status == "Created" and data.handler == os.getComputerID() and message ~= "ping")
+        datam.fulllink = data.fulllink
         local listw = fs.open("disk/ECard/Data","w")
         listw.write(textutils.serialise(datam))
         listw.close()
