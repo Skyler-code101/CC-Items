@@ -56,7 +56,7 @@ end
 function startup()
     term.clear()
     term.setCursorPos(1,1)
-    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n")
+    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device\n")
 local promt = read()
 if (promt == "1") then
     if (disk.isPresent("right")) then
@@ -150,6 +150,61 @@ if (fs.exists("disk/ECard/Data")) then
 end
 else
     print("Insert ECard")
+end
+elseif promt == "3" then
+    print("Loading ECard...")
+    if (fs.exists("disk/ECard/Data")) then     
+        datafile = fs.open("disk/ECard/Data","r")
+        data = textutils.unserialise(datafile.readAll())
+        print("Loading Bank Acount...")
+        local sendstate ={}
+        sendstate.computer = os.getComputerID()
+        sendstate.status = "lookup"
+        sendstate.id = data.fulllink
+        local datar = {}
+        ws.send(textutils.serialise(sendstate))
+        repeat
+            event, url, message = os.pullEvent("websocket_message")
+            datar = textutils.unserialise(message)
+    
+        until (datar.handler == os.getComputerID() and url == myURL)
+        if datar.status == "NonExistent" then
+            print("unable to find account")
+        elseif datar.status == "Reply" then
+            local dataw = datar
+        print("Name: "..datar.playername)
+        print("Pin:")
+        local pin = tonumber(monitorPinEnter())
+        print(tostring(pin))
+        print("Sell Amount:")
+        local charge = tonumber(read())
+        sendstate.computer = os.getComputerID()
+        sendstate.status = "sell"
+        sendstate.id = data.fulllink
+        sendstate.charge = charge
+        sendstate.pin = pin
+        ws.send(textutils.serialise(sendstate))
+        print("Processing...")
+        repeat
+            event, url, message = os.pullEvent("websocket_message")
+            datar = textutils.unserialise(message)
+    
+        until (datar.handler == os.getComputerID() and url == myURL)
+        if datar.status == "ReplyAuth" then
+            if datar.ReplyMessage == "Accepted Payment" then
+                print("Aproved Payment")
+                DisplayMessage("Aproved Payment",colors.green)
+            elseif datar.ReplyMessage == "InvalidAmt" then
+                DisplayMessage("Declined",colors.red)
+                print("Declined : Invalid Amount")
+            elseif datar.ReplyMessage == "Invalid Pin" then
+                
+                DisplayMessage("Declined",colors.red)
+                print("Declined : Invalid Pin")
+            end
+        end
+        
+    end
 end
 end
 sleep(2)
