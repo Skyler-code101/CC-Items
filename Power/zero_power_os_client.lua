@@ -9,6 +9,7 @@ local npercent = ""
 local energy = ""
 local nenergy = ""
 local connected = false
+local w,h = monitor.getSize()
 
 function receivedata()
 	while true do
@@ -32,7 +33,6 @@ end
 local linenu = 0
 local function monprint(text)
 
-    local w,h = monitor.getSize()
     linenu = linenu + 1
     monitor.setCursorPos(1,linenu)
     monitor.write(text)
@@ -69,25 +69,28 @@ local function printdata()
                 monprint("Server Dead")
             end
             monitor.setTextColor(colors.green)
-		    monitor.setTextColor(colors.gray)
+		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================") 
 		    monitor.setTextColor(colors.green)
             monprint("Hello Welcome To ZeroSPTN")
             monprint("Client Mode")
-		    monitor.setTextColor(colors.gray)
+		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================") 
             monprint("===========================================================================")
 		    monitor.setTextColor(colors.blue)
             monprint("Power Held Percentage : "..percent.."%")
             monprint("Network Power Percentage : "..npercent.."%")
-		    monitor.setTextColor(colors.gray)
+		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================")
 		    monitor.setTextColor(colors.lightBlue)
             monprint("Power Held : "..energy.."FE")
             monprint("Network Power : "..nenergy.."FE")
+		    monitor.setTextColor(colors.lightGray)
+            monprint("===========================================================================")
+            monprint("===========================================================================")
 		    monitor.setTextColor(colors.gray)
-            monprint("===========================================================================")
-            monprint("===========================================================================")
+            monitor.setCursorPos(1,h)
+            monitor.write("Zero Creates Inc.")
             sleep(.1)
         end
     end
