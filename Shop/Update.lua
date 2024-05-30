@@ -1,0 +1,6 @@
+print("updating")
+shell.execute("delete","paymentTerm.lua")
+shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
+shell.execute("delete", "ECard.lua")
+shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua")
+print("Update Complete")
