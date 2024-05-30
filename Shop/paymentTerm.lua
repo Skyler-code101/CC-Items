@@ -56,7 +56,7 @@ end
 function startup()
     term.clear()
     term.setCursorPos(1,1)
-    print("Welcome To the Payment Panel\n\n 1 : Account Wizard \n 2 : Payment Device")
+    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n")
 local promt = read()
 if (promt == "1") then
     if (disk.isPresent("right")) then
@@ -69,7 +69,6 @@ if (promt == "1") then
         datal.pin = tonumber(monitorPinEnter())
         print(tostring(datal.pin))
         print("Starting Creation...")
-        datal.bal = 5
         local Ecardos = fs.open("ECard.lua","r")
         local startupfile = fs.open("disk/startup","w")
         local id = math.random(10000000, 99999999)
