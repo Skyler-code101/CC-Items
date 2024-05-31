@@ -205,10 +205,16 @@ elseif promt == "3" then
 end
 elseif promt == "Update" then
     print("updating")
-    shell.execute("delete","paymentTerm.lua")
-    shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
-    shell.execute("delete", "ECard.lua")
-    shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua")
+    local ptt = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
+    local url = "local myURL = '"..myURL.."'\n"
+    local paymentTerm = fs.open("paymentTerm.lua","w")
+    paymentTerm.write(url..ptt.readAll())
+    paymentTerm.close()
+    local startup = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/startup.lua")
+    local pass = "local password = '"..password.."'\n"
+    local startupl = fs.open("startup.lua","w")
+    startupl.write(pass..startup.readAll())
+    startupl.close()
     print("Update Complete")
     sleep(2)
     os.reboot()
