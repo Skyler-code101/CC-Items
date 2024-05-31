@@ -1,5 +1,4 @@
 local monitor = peripheral.find("monitor")
-local myURL = "wss://server-link-sgujurney-235d845ea187.herokuapp.com"
 local ws = http.websocket(myURL)
 function monitorPinEnter()
     local pin = ""
@@ -206,9 +205,20 @@ elseif promt == "3" then
         
     end
 end
+elseif promt == "Update" then
+    print("updating")
+    shell.execute("delete","paymentTerm.lua")
+    shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
+    shell.execute("delete", "ECard.lua")
+    shell.execute("wget", "https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua")
+    print("Update Complete")
+    sleep(2)
+    os.reboot()
 end
 sleep(2)
 monitor.clear()
 startup()
 end
-startup()
+
+
+parallel.waitForAny(startup)
