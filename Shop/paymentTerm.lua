@@ -208,7 +208,7 @@ elseif promt == "Update" then
     local ptt = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
     local url = "local myURL = '"..myURL.."'\n"
     local paymentTerm = fs.open("paymentTerm.lua","w")
-    paymentTerm.write(url..pass..ptt.readAll())
+    paymentTerm.write(url..ptt.readAll())
     paymentTerm.close()
     print("Update Complete")
     sleep(2)
