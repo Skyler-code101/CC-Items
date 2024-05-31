@@ -68,7 +68,6 @@ if (promt == "1") then
         datal.pin = tonumber(monitorPinEnter())
         print(tostring(datal.pin))
         print("Starting Creation...")
-        local Ecardos = fs.open("ECard.lua","r")
         local startupfile = fs.open("disk/startup","w")
         local datam = {}
         local data = {}
@@ -85,9 +84,8 @@ if (promt == "1") then
         local listw = fs.open("disk/ECard/Data","w")
         listw.write(textutils.serialise(datam))
         listw.close()
-        startupfile.write(Ecardos.readAll())
+        startupfile.write(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua"))
         startupfile.close()
-        Ecardos.close()
         disk.setLabel("right","ECard")
         print("Finished Creation")      
     else 
