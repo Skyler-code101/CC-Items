@@ -56,6 +56,7 @@ function startup()
     term.clear()
     term.setCursorPos(1,1)
     print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device\n")
+    write("> ")
 local promt = read()
 if (promt == "1") then
     if (disk.isPresent("right")) then
