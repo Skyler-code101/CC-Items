@@ -9,7 +9,7 @@ local function awaitUnlock()
         local e = os.pullEventRaw("disk")
         if e == "disk" then
             local fh = fs.open("disk/key","r")
-            if fh and fh.readAll() == "mOgt=R4Dyk/o3T#1{}s8PL)UGoPvro!N=D8rYUQ($CrJj|Bj];\n" then
+            if fh and fh.readAll() == password then
                 break
             end
         end
