@@ -1,5 +1,32 @@
 local monitor = peripheral.find("monitor")
 local ws = http.websocket(myURL)
+local lversionfile = fs.open("Version","r")
+local gversionfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/PaymentVersion.json")
+local lfiledata = textutils.unserialise(lversionfile.readAll())
+local gfiledata = textutils.unserialise(gversionfile.readAll())
+lversionfile.close()
+if lfiledata.version ~= gfiledata.version then
+    print("Update Found")
+    print("Local Version : "..lfiledata.version)
+    print("Global Version : "..gfiledata.version)
+    print("    Update Change : "..gfiledata.Change)
+    print("Press Enter To Run Update")
+    repeat
+        local event,key = os.pullEvent("key")
+    until event == "key"and key == keys.enter
+    print("Updating")
+    local ptt = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
+    local url = "local myURL = '"..myURL.."'\n"
+    local paymentTerm = fs.open("paymentTerm.lua","w")
+    paymentTerm.write(url..ptt.readAll())
+    paymentTerm.close()
+    local VersionFile = fs.open("Version","w")
+    VersionFile.write(textutils.serialise(gfiledata))
+    VersionFile.close()
+    print("Update Complete")
+    sleep(2)
+    os.reboot()
+end
 function monitorPinEnter()
     local pin = ""
     monitor.setTextScale(1.8)
@@ -220,15 +247,7 @@ elseif promt == "3" then
     end
 end
 elseif promt == "Update" then
-    print("updating")
-    local ptt = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
-    local url = "local myURL = '"..myURL.."'\n"
-    local paymentTerm = fs.open("paymentTerm.lua","w")
-    paymentTerm.write(url..ptt.readAll())
-    paymentTerm.close()
-    print("Update Complete")
-    sleep(2)
-    os.reboot()
+    
 end
 sleep(2)
 monitor.clear()
