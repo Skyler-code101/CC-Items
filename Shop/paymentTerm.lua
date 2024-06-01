@@ -85,7 +85,7 @@ if (promt == "1") then
         local listw = fs.open("disk/ECard/Data","w")
         listw.write(textutils.serialise(datam))
         listw.close()
-        startupfile.write(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua"))
+        startupfile.write(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/Ecard/ECard.lua").readAll())
         startupfile.close()
         disk.setLabel("right","ECard")
         print("Finished Creation")      
