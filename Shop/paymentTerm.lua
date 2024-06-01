@@ -55,19 +55,25 @@ end
 function startup()
     term.clear()
     term.setCursorPos(1,1)
-    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device\n")
+    term.setTextColor(colors.red)
+    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device")
+    term.setTextColor(colors.yellow)
     write("> ")
 local promt = read()
 if (promt == "1") then
     if (disk.isPresent("right")) then
+        term.setTextColor(colors.red)
         print("Welcome To the Account Wizard\n")
-        print("Enter Account Holder Name:")
+        term.setTextColor(colors.yellow)
+        write("Account Holder Name> ")
         local datal={}
         datal.status = "create"
         datal.playername = read()
-        print("Enter Account Auth Pin:")
+        term.setTextColor(colors.blue)
+        print("Enter Account Auth Pin On Screen")
         datal.pin = tonumber(monitorPinEnter())
         print(tostring(datal.pin))
+        term.setTextColor(colors.green)
         print("Starting Creation...")
         local startupfile = fs.open("disk/startup","w")
         local datam = {}
@@ -93,6 +99,7 @@ if (promt == "1") then
         print("Please Enter ECard")
     end
 elseif (promt == "2") then
+    term.setTextColor(colors.green)
 print("Loading ECard...")
 if (fs.exists("disk/ECard/Data")) then     
     datafile = fs.open("disk/ECard/Data","r")
@@ -113,11 +120,14 @@ if (fs.exists("disk/ECard/Data")) then
         print("unable to find account")
     elseif datar.status == "Reply" then
         local dataw = datar
+        term.setTextColor(colors.red)
     print("Name: "..datar.playername)
-    print("Pin:")
+    term.setTextColor(colors.blue)
+    print("Enter Pin On Screen")
     local pin = tonumber(monitorPinEnter())
     print(tostring(pin))
-    print("Charge Amount:")
+    term.setTextColor(colors.yellow)
+    write("Charge Amount > ")
     local charge = tonumber(read())
     sendstate.computer = os.getComputerID()
     sendstate.status = "charge"
@@ -125,6 +135,7 @@ if (fs.exists("disk/ECard/Data")) then
     sendstate.charge = charge
     sendstate.pin = pin
     ws.send(textutils.serialise(sendstate))
+    term.setTextColor(colors.green)
     print("Processing...")
     repeat
         event, url, message = os.pullEvent("websocket_message")
@@ -150,6 +161,7 @@ else
     print("Insert ECard")
 end
 elseif promt == "3" then
+    term.setTextColor(colors.green)
     print("Loading ECard...")
     if (fs.exists("disk/ECard/Data")) then     
         datafile = fs.open("disk/ECard/Data","r")
@@ -170,11 +182,13 @@ elseif promt == "3" then
             print("unable to find account")
         elseif datar.status == "Reply" then
             local dataw = datar
+            term.setTextColor(colors.red)
         print("Name: "..datar.playername)
-        print("Pin:")
+        term.setTextColor(colors.yellow)
+        write("Pin > ")
         local pin = tonumber(monitorPinEnter())
         print(tostring(pin))
-        print("Sell Amount:")
+        write("Sell Amount > ")
         local charge = tonumber(read())
         sendstate.computer = os.getComputerID()
         sendstate.status = "sell"
@@ -182,6 +196,7 @@ elseif promt == "3" then
         sendstate.charge = charge
         sendstate.pin = pin
         ws.send(textutils.serialise(sendstate))
+        term.setTextColor(colors.green)
         print("Processing...")
         repeat
             event, url, message = os.pullEvent("websocket_message")
