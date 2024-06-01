@@ -67,6 +67,7 @@ function startup()
     print("     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device")
     term.setTextColor(colors.yellow)
     write("> ")
+    term.setTextColor(colors.white)
 local promt = read()
 if (promt == "1") then
     if (disk.isPresent("right")) then
