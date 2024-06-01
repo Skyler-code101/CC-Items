@@ -230,8 +230,8 @@ elseif promt == "3" then
         
     end
 end
-elseif promt == "Update" then
-    
+elseif promt == "Version" then
+    print("Version: "..lfiledata.version)
 end
 sleep(2)
 monitor.clear()
