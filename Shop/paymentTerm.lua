@@ -61,8 +61,10 @@ end
 function startup()
     term.clear()
     term.setCursorPos(1,1)
+    term.setTextColor(colors.orange)
+    print("Welcome To the Payment Panel")
     term.setTextColor(colors.red)
-    print("Welcome To the Payment Panel\n\n     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device")
+    print("     1 : Account Wizard \n     2 : Payment Device \n     3 : Selling Device")
     term.setTextColor(colors.yellow)
     write("> ")
 local promt = read()
@@ -72,6 +74,7 @@ if (promt == "1") then
         print("Welcome To the Account Wizard\n")
         term.setTextColor(colors.yellow)
         write("Account Holder Name> ")
+        term.setTextColor(colors.white)
         local datal={}
         datal.status = "create"
         datal.playername = read()
@@ -134,6 +137,7 @@ if (fs.exists("disk/ECard/Data")) then
     print(tostring(pin))
     term.setTextColor(colors.yellow)
     write("Charge Amount > ")
+    term.setTextColor(colors.white)
     local charge = tonumber(read())
     sendstate.computer = os.getComputerID()
     sendstate.status = "charge"
@@ -191,10 +195,11 @@ elseif promt == "3" then
             term.setTextColor(colors.red)
         print("Name: "..datar.playername)
         term.setTextColor(colors.yellow)
-        write("Pin > ")
+        write("Enter Pin On Screen")
         local pin = tonumber(monitorPinEnter())
         print(tostring(pin))
         write("Sell Amount > ")
+        term.setTextColor(colors.white)
         local charge = tonumber(read())
         sendstate.computer = os.getComputerID()
         sendstate.status = "sell"
@@ -234,14 +239,18 @@ startup()
 end
 
 if lfiledata.version ~= gfiledata.version then
+    term.setTextColor(colors.orange)
     print("Update Found")
     print("Local Version : "..lfiledata.version)
     print("Global Version : "..gfiledata.version)
     print("    Update Change : "..gfiledata.Change)
+    term.setTextColor(colors.gray)
     print("Press Enter To Run Update")
     repeat
         local event,key = os.pullEvent("key")
     until event == "key"and key == keys.enter
+    
+    term.setTextColor(colors.green)
     print("Updating")
     local ptt = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Shop/paymentTerm.lua")
     local url = "local myURL = '"..myURL.."'\n"
