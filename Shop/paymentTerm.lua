@@ -233,7 +233,113 @@ elseif promt == "3" then
 end
 elseif promt == "Version" then
     print("Version: "..lfiledata.version)
+elseif promt == "Host" then
+    local modem = peripheral.find("modem") or error("No modem attached", 0)
+    modem.open(0)
+    local mode = 0
+    local ReplyMessage = {}
+    local sendstate = {}
+    local loadedcharge = 0
+    while true do
+        local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+    if mode == 0 then
+        if message.functionCall == "SetMode" then
+            if message.mode == 1 then
+                mode = 1
+            elseif message.mode == 2 then
+                mode = 2
+            elseif message.mode == 0 then
+                mode = 0
+            end
+        elseif message.functionCall == "GetModes" then
+            ReplyMessage.functionCall = "Reply"
+            ReplyMessage.replyType = "print"
+            ReplyMessage.data = "1 : Paying To You\n2 : Paying To Player"
+            modem.transmit(0, 0, ReplyMessage)
+        else
+            print("Recived Invaild Function")
+        end
+    elseif mode == 2  then
+        if message.functionCall == "Run" then
+            if message.runningFunc == "Exchange" then 
+                print("Recived Exchange Command")
+                sendstate.computer = os.getComputerID()
+                sendstate.status = "sell"
+                sendstate.id = message.info.id
+                sendstate.charge = loadedcharge
+                sendstate.pin = message.info.pin
+                ws.send(textutils.serialise(sendstate))
+                term.setTextColor(colors.green)
+                print("Processing...")
+                repeat
+                    event, url, message = os.pullEvent("websocket_message")
+                    datar = textutils.unserialise(message)
+    
+                until (datar.handler == os.getComputerID() and url == myURL)
+                if datar.status == "ReplyAuth" then
+                    if datar.ReplyMessage == "Accepted Payment" then
+                        
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = true
+                        modem.transmit(0, 0, ReplyMessage)
+                    elseif datar.ReplyMessage == "InvalidAmt" then
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = false
+                        modem.transmit(0, 0, ReplyMessage)
+
+                    elseif datar.ReplyMessage == "Invalid Pin" then
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = false
+                        modem.transmit(0, 0, ReplyMessage)
+                    end
+                end
+            end
+        end
+    elseif mode == 1 then
+        if message.functionCall == "Run" then
+            if message.runningFunc == "Exchange" then
+                print("Recived Exchange Command")
+                sendstate.computer = os.getComputerID()
+                sendstate.status = "charge"
+                sendstate.id = message.info.id
+                sendstate.charge = loadedcharge
+                sendstate.pin = message.info.pin
+                ws.send(textutils.serialise(sendstate))
+                term.setTextColor(colors.green)
+                print("Processing...")
+                repeat
+                    event, url, message = os.pullEvent("websocket_message")
+                    datar = textutils.unserialise(message)
+
+                until (datar.handler == os.getComputerID() and url == myURL)
+                if datar.status == "ReplyAuth" then
+                    if datar.ReplyMessage == "Accepted Payment" then
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = true
+                        modem.transmit(0, 0, ReplyMessage)
+                    elseif datar.ReplyMessage == "Insufficient Funds" then
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = false
+                        modem.transmit(0, 0, ReplyMessage)
+                    elseif datar.ReplyMessage == "Invalid Pin" then
+                        ReplyMessage.functionCall = "Reply"
+                        ReplyMessage.replyType = "Auth"
+                        ReplyMessage.data = false
+                        modem.transmit(0, 0, ReplyMessage)
+                    end
+                end
+            end
+        end
+        
+    end
+    end
 end
+
 sleep(2)
 monitor.clear()
 startup()
