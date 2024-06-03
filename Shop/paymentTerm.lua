@@ -235,7 +235,8 @@ elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
     local modem = peripheral.find("modem") or print("No Wired Modem Exists")
-    write("Host Port > ")
+    if modem then
+        write("Host Port > ")
     local hostport = tonumber(read())
     modem.open(hostport)
     print("Host Open On Port "..tostring(hostport))
@@ -443,6 +444,7 @@ elseif promt == "Host" then
                 print("Recived Invaild Function")
             end
         
+    end
     end
     end
 end
