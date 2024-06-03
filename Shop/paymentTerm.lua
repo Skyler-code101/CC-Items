@@ -234,28 +234,54 @@ end
 elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
-    local modem = peripheral.find("modem") or error("No modem attached", 0)
-    modem.open(0)
+    local modem = peripheral.find("modem") or print("No Wired Modem Exists")
+    write("Host Port > ")
+    local hostport = tonumber(read())
+    modem.open(hostport)
+    print("Host Open On Port "..tostring(hostport))
     local mode = 0
     local ReplyMessage = {}
     local sendstate = {}
     local loadedcharge = 0
+    print()
     while true do
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
     if mode == 0 then
         if message.functionCall == "SetMode" then
             if message.mode == 1 then
                 mode = 1
+                print("Mode Changed To Mode 1")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Changed To Mode 1"
+                modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 2 then
                 mode = 2
+                print("Mode Changed To Mode 2")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Changed To Mode 1"
+                modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 0 then
                 mode = 0
+                print("Mode Reset")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Reset"
+                modem.transmit(hostport, 0, ReplyMessage)
             end
         elseif message.functionCall == "GetModes" then
             ReplyMessage.functionCall = "Reply"
             ReplyMessage.replyType = "print"
             ReplyMessage.data = "1 : Paying To You\n2 : Paying To Player"
-            modem.transmit(0, 0, ReplyMessage)
+            modem.transmit(hostport, 0, ReplyMessage)
+        elseif message.functionCall == "SetCharge" then
+            loadedcharge = message.value
+            ReplyMessage.functionCall = "Reply"
+            ReplyMessage.replyType = "print"
+            ReplyMessage.modifyedItem = "Charge"
+            ReplyMessage.data = loadedcharge
+            print("Set Charge To "..tostring(loadedcharge))
         else
             print("Recived Invaild Function")
         end
@@ -282,21 +308,61 @@ elseif promt == "Host" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = true
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Payment Accepted")
+                        modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "InvalidAmt" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Invalid Amount")
+                        modem.transmit(hostport, 0, ReplyMessage)
 
                     elseif datar.ReplyMessage == "Invalid Pin" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Invalid Pin")
+                        modem.transmit(hostport, 0, ReplyMessage)
                     end
                 end
             end
+        elseif message.functionCall == "SetMode" then
+            if message.mode == 1 then
+                mode = 1
+                print("Mode Changed To Mode 1")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Changed To Mode 1"
+                modem.transmit(hostport, 0, ReplyMessage)
+            elseif message.mode == 2 then
+                mode = 2
+                print("Mode Changed To Mode 2")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Changed To Mode 1"
+                modem.transmit(hostport, 0, ReplyMessage)
+            elseif message.mode == 0 then
+                mode = 0
+                print("Mode Reset")
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "Mode Reset"
+                modem.transmit(hostport, 0, ReplyMessage)
+            end
+        elseif message.functionCall == "GetModes" then
+            ReplyMessage.functionCall = "Reply"
+            ReplyMessage.replyType = "print"
+            ReplyMessage.data = "1 : Paying To You\n2 : Paying To Player"
+            modem.transmit(hostport, 0, ReplyMessage)
+        elseif message.functionCall == "SetCharge" then
+            loadedcharge = message.value
+            ReplyMessage.functionCall = "Reply"
+            ReplyMessage.replyType = "print"
+            ReplyMessage.modifyedItem = "Charge"
+            ReplyMessage.data = loadedcharge
+            print("Set Charge To "..tostring(loadedcharge))
+        else
+            print("Recived Invaild Function")
         end
     elseif mode == 1 then
         if message.functionCall == "Run" then
@@ -320,21 +386,62 @@ elseif promt == "Host" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = true
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Accepted Payment")
+                        modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "Insufficient Funds" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Insufficient Funds")
+                        modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "Invalid Pin" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        modem.transmit(0, 0, ReplyMessage)
+                        print("Invalid Pin")
+                        modem.transmit(hostport, 0, ReplyMessage)
                     end
                 end
             end
-        end
+        elseif message.functionCall == "SetMode" then
+                if message.mode == 1 then
+                    mode = 1
+                    print("Mode Changed To Mode 1")
+                    ReplyMessage.functionCall = "Reply"
+                    ReplyMessage.replyType = "print"
+                    ReplyMessage.data = "Mode Changed To Mode 1"
+                    modem.transmit(hostport, 0, ReplyMessage)
+                elseif message.mode == 2 then
+                    mode = 2
+                    print("Mode Changed To Mode 2")
+                    ReplyMessage.functionCall = "Reply"
+                    ReplyMessage.replyType = "print"
+                    ReplyMessage.data = "Mode Changed To Mode 1"
+                    modem.transmit(hostport, 0, ReplyMessage)
+                elseif message.mode == 0 then
+                    mode = 0
+                    print("Mode Reset")
+                    ReplyMessage.functionCall = "Reply"
+                    ReplyMessage.replyType = "print"
+                    ReplyMessage.data = "Mode Reset"
+                    modem.transmit(hostport, 0, ReplyMessage)
+                end
+            elseif message.functionCall == "GetModes" then
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.data = "1 : Paying To You\n2 : Paying To Player"
+                print("Mode Called")
+                modem.transmit(hostport, 0, ReplyMessage)
+            elseif message.functionCall == "SetCharge" then
+                loadedcharge = message.value
+                ReplyMessage.functionCall = "Reply"
+                ReplyMessage.replyType = "print"
+                ReplyMessage.modifyedItem = "Charge"
+                ReplyMessage.data = loadedcharge
+                print("Set Charge To "..tostring(loadedcharge))
+            else
+                print("Recived Invaild Function")
+            end
         
     end
     end
