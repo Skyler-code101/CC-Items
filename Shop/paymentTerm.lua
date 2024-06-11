@@ -254,7 +254,6 @@ function StopHost()
     print("Host Stopped")
 end
 function Hostmode()
-    while true do
         write("Host Port > ")
     local hostport = tonumber(read())
     modem.open(hostport)
@@ -467,7 +466,6 @@ function Hostmode()
     end
     end
     
-end
 if lfiledata.version ~= gfiledata.version then
     term.setTextColor(colors.orange)
     print("Update Found")
