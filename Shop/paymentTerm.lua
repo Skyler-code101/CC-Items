@@ -236,7 +236,7 @@ elseif promt == "Version" then
 elseif promt == "Host" then
     local modem = peripheral.find("modem") or print("No Wired Modem Exists")
     if peripheral.find("modem") then
-        parallel.waitForAny(Hostmode)
+        parallel.waitForAny(Hostmode,StopHost)
     end
 end
 
