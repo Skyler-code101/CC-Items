@@ -5,7 +5,7 @@ local gversionfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/ma
 local lfiledata = textutils.unserialise(lversionfile.readAll())
 local gfiledata = textutils.unserialise(gversionfile.readAll())
 lversionfile.close()
-
+local modem = peripheral.find("modem")
 function monitorPinEnter()
     local pin = ""
     monitor.setTextScale(1.8)
@@ -234,9 +234,10 @@ end
 elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
-    local modem = peripheral.find("modem") or print("No Wired Modem Exists")
     if peripheral.find("modem") then
         parallel.waitForAny(Hostmode,StopHost)
+        else
+            print("No Modem Found")
     end
 end
 
