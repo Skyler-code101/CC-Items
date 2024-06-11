@@ -236,6 +236,25 @@ elseif promt == "Version" then
 elseif promt == "Host" then
     local modem = peripheral.find("modem") or print("No Wired Modem Exists")
     if peripheral.find("modem") then
+        parallel.waitForAny(Hostmode)
+    end
+end
+
+sleep(2)
+monitor.clear()
+startup()
+end
+function StopHost()
+    while true do
+        local event, key, is_held = os.pullEvent("key")
+        if key == keys.endPage then
+            break
+        end
+    end
+    print("Host Stopped")
+end
+function Hostmode()
+    while true do
         write("Host Port > ")
     local hostport = tonumber(read())
     modem.open(hostport)
@@ -447,13 +466,8 @@ elseif promt == "Host" then
     end
     end
     end
+    
 end
-
-sleep(2)
-monitor.clear()
-startup()
-end
-
 if lfiledata.version ~= gfiledata.version then
     term.setTextColor(colors.orange)
     print("Update Found")
