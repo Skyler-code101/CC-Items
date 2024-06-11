@@ -266,6 +266,7 @@ function Hostmode()
     print()
     while true do
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+        term.setTextColor(colors.blue)
     if mode == 0 then
         if message.functionCall == "SetMode" then
             if message.mode == 1 then
@@ -312,7 +313,7 @@ function Hostmode()
                 sendstate.computer = os.getComputerID()
                 sendstate.status = "sell"
                 sendstate.id = message.info.id
-                sendstate.charge = loadedcharge
+                sendstate.charge = tonumber(loadedcharge)
                 sendstate.pin = message.info.pin
                 ws.send(textutils.serialise(sendstate))
                 term.setTextColor(colors.green)
@@ -391,7 +392,7 @@ function Hostmode()
                 sendstate.computer = os.getComputerID()
                 sendstate.status = "charge"
                 sendstate.id = message.info.id
-                sendstate.charge = loadedcharge
+                sendstate.charge = tonumber(loadedcharge)
                 sendstate.pin = message.info.pin
                 ws.send(textutils.serialise(sendstate))
                 term.setTextColor(colors.green)
@@ -426,6 +427,7 @@ function Hostmode()
         elseif message.functionCall == "SetMode" then
                 if message.mode == 1 then
                     mode = 1
+                    term.setTextColor(colors.yellow)
                     print("Mode Changed To Mode 1")
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"
@@ -433,6 +435,7 @@ function Hostmode()
                     modem.transmit(hostport, 0, ReplyMessage)
                 elseif message.mode == 2 then
                     mode = 2
+                    term.setTextColor(colors.yellow)
                     print("Mode Changed To Mode 2")
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"
@@ -440,6 +443,7 @@ function Hostmode()
                     modem.transmit(hostport, 0, ReplyMessage)
                 elseif message.mode == 0 then
                     mode = 0
+                    term.setTextColor(colors.yellow)
                     print("Mode Reset")
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"

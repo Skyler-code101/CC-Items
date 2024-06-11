@@ -85,7 +85,7 @@ if diskdrive ~= nil and PayTerm ~= nil then
     PayTerm.transmit(93,0,messagetosend)
     if fs.exists("disk/ECard/Data") then
         messagetosend.functionCall = "SetCharge"
-        messagetosend.value = tran.Charge
+        messagetosend.value = tonumber(tran.Charge)
         PayTerm.transmit(93,0,messagetosend)
         local ecard =fs.open("disk/ECard/Data","r")
         local data = textutils.unserialise(ecard.readAll())
