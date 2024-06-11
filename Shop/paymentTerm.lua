@@ -235,7 +235,7 @@ elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
     local modem = peripheral.find("modem") or print("No Wired Modem Exists")
-    if modem then
+    if peripheral.find("modem") then
         write("Host Port > ")
     local hostport = tonumber(read())
     modem.open(hostport)

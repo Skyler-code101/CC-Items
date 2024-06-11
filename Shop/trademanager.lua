@@ -5,6 +5,9 @@ local storage = peripheral.find("sophisticatedstorage:barrel")
 local tran = {}
 display.clear()
 display.setTextScale(.5)
+
+local PayTerm = peripheral.find("modem")
+local diskdrive = peripheral.find("drive")
 local function existsinfile(playername,prime)
     value = prime
     repeat
@@ -73,18 +76,77 @@ term.setTextColor(colors.lime)
 tran.Charge = read()
 display.setCursorPos(1,10)
 display.write("Total Charge: "..tran.Charge)
+local pin
+local messagetosend = {}
+if diskdrive and PayTerm then
+    if fs.exists("disk/ECard/Data") then
+        messagetosend.functionCall = "SetCharge"
+        messagetosend.value = tran.Charge
+        PayTerm.transmit(93,0,messagetosend)
+        local ecard =fs.open("disk/ECard/Data","r")
+        local data = textutils.unserialise(ecard.readAll())
+        print("Card Found Enter Pin")
+        pin = tonumber(read())
+        messagetosend = {}
+        messagetosend.functionCall = "Run"
+        messagetosend.runningFunc = "Exchange"
+        messagetosend.info.pin = pin
+        messagetosend.info.id = data.fulllink
+    end
+end
 term.setTextColor(colors.green)
 print("Complete the Transaction?")
 term.setTextColor(colors.lime)
 local v = read()
 if (v == "y") then
     term.setTextColor(colors.yellow)
-    print("Transaction Complete")
-    handel.write(textutils.serialise(tran))
-    display.clear()
-    printer.setCursorPos(1,linenup+1)
-    printer.write("Total : "..tran.Charge)
-    printer.endPage()
+    if diskdrive and PayTerm then
+    while true do
+        PayTerm.transmit(93,0,messagetosend)
+        repeat
+            local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+            local msgtocompare = {}
+            msgtocompare.functionCall = "Reply"
+            msgtocompare.replyType = "Auth"
+        until channel == 93 and message.functionCall == msgtocompare.functionCall and message.replyType == msgtocompare.replyType
+        if message.data == true then
+            print("Transaction Complete")
+            handel.write(textutils.serialise(tran))
+            display.clear()
+            printer.setCursorPos(1,linenup+1)
+            printer.write("Total : "..tran.Charge)
+            printer.endPage()
+            break
+        else
+            print("Declined")
+            display.clear()
+            printer.setCursorPos(1,linenup+1)
+            printer.write("Card Declined")
+            print("Try new Pin?")
+            if read() == "y" then
+                print("Enter Correct Pin")
+                pin = tonumber(read())
+                messagetosend.info.pin = pin
+            else
+                print("Payment Canceled")
+                display.clear()
+                printer.setCursorPos(1,linenup+1)
+                printer.write("Payment Canceled After Card Declined")
+                printer.endPage()
+            end
+        end
+    end
+    else 
+        print("No Payment Term Connected Please Connect a Payment Term")
+        print("Recipt Printing")
+        print("Recipt Printed")
+        handel.write(textutils.serialise(tran))
+        display.clear()
+        printer.setCursorPos(1,linenup+1)
+        printer.write("Total : "..tran.Charge)
+        printer.endPage()
+end
+    
     sleep(.5)
     os.reboot()
 elseif (v=="n") then
