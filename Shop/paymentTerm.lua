@@ -551,7 +551,7 @@ else
     end
     local configfileraw = fs.open("Config","r")
     local configfile = configfileraw.readAll()
-    local Config = textutils.unserialise(configfile)
+    local Config = textutils.unserialise(configfile) or {}
     if Config.HostStartup == true then
         parallel.waitForAll(Hostmode,HostCmd,HostLogging)
     else
