@@ -253,6 +253,7 @@ function HostLogging()
     while true do
         if LogPaused == false then
             term.clear()
+            term.setCursorPos(1,1)
             for index, value in ipairs(Hostlog) do
                 print(value)
             end
