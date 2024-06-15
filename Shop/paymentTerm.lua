@@ -235,7 +235,7 @@ elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
     if peripheral.find("modem") then
-        parallel.waitForAny(Hostmode,StopHost)
+        parallel.waitForAll(Hostmode,HostCmd,HostLogging)
         else
             print("No Modem Found")
     end
@@ -245,24 +245,71 @@ sleep(2)
 monitor.clear()
 startup()
 end
-function StopHost()
+local Hostlog = {}
+local LogPaused = false
+local mode = 0
+local loadedcharge = 0
+function HostLogging()
     while true do
-        local event, key, is_held = os.pullEvent("key")
-        if key == keys.endPage then
-            break
+        if LogPaused == false then
+            term.clear()
+            for index, value in ipairs(Hostlog) do
+                print(value)
+            end
+            sleep(.1)
         end
     end
-    print("Host Stopped")
+    
+end
+function HostCmd()
+    while true do
+        local event, key, is_held = os.pullEvent("key")
+        if event == "key"and key == keys.slash then
+            LogPaused = true
+            local w,h = term.getSize()
+            term.setCursorPos(1,h-1)
+            write(">")
+            local promt = read()
+            term.setTextColor(colors.green)
+            term.setCursorPos(1,h)
+            if promt == "Close" then
+                local configfilerawr = fs.open("Config","r")
+                local configfiler = configfileraw.readAll()
+                local Configr = textutils.unserialise(configfile)
+                Configr.HostStartup = false
+                local configfileraww = fs.open("Config","w")
+                configfileraww.write(Configr)
+                os.reboot()
+            elseif promt == "setMode 0" then
+                mode = 0
+                print("Mode Reset")
+            elseif promt == "setMode 1" then
+                mode = 1
+                print("Mode Set To 1")
+            elseif promt == "setMode 2" then
+                mode = 2
+                print("Mode Set To 2")
+            elseif promt == "HostStartup" then
+                local configfilerawr = fs.open("Config","r")
+                local configfiler = configfileraw.readAll()
+                local Configr = textutils.unserialise(configfile)
+                configfilerawr.close()
+                Configr.HostStartup = true
+                local configfileraww = fs.open("Config","w")
+                configfileraww.write(Configr)
+                configfileraww.close()
+                print("Host Will Start On Startup")
+            end
+        end
+    end
 end
 function Hostmode()
         write("Host Port > ")
     local hostport = tonumber(read())
     modem.open(hostport)
     print("Host Open On Port "..tostring(hostport))
-    local mode = 0
     local ReplyMessage = {}
     local sendstate = {}
-    local loadedcharge = 0
     print()
     while true do
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
@@ -271,21 +318,21 @@ function Hostmode()
         if message.functionCall == "SetMode" then
             if message.mode == 1 then
                 mode = 1
-                print("Mode Changed To Mode 1")
+                Hostlog[#table+1] ="Mode Changed To Mode 1"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Changed To Mode 1"
                 modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 2 then
                 mode = 2
-                print("Mode Changed To Mode 2")
+                Hostlog[#table+1] ="Mode Changed To Mode 2"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Changed To Mode 1"
                 modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 0 then
                 mode = 0
-                print("Mode Reset")
+                Hostlog[#table+1] ="Mode Reset"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Reset"
@@ -302,14 +349,14 @@ function Hostmode()
             ReplyMessage.replyType = "print"
             ReplyMessage.modifyedItem = "Charge"
             ReplyMessage.data = loadedcharge
-            print("Set Charge To "..tostring(loadedcharge))
+            Hostlog[#table+1] ="Set Charge To "..tostring(loadedcharge)
         else
             print("Recived Invaild Function")
         end
     elseif mode == 2  then
         if message.functionCall == "Run" then
             if message.runningFunc == "Exchange" then 
-                print("Recived Exchange Command")
+                Hostlog[#table+1] ="Recived Exchange Command"
                 sendstate.computer = os.getComputerID()
                 sendstate.status = "sell"
                 sendstate.id = message.info.id
@@ -317,7 +364,7 @@ function Hostmode()
                 sendstate.pin = message.info.pin
                 ws.send(textutils.serialise(sendstate))
                 term.setTextColor(colors.green)
-                print("Processing...")
+                Hostlog[#table+1] ="Processing..."
                 repeat
                     event, url, message = os.pullEvent("websocket_message")
                     datar = textutils.unserialise(message)
@@ -329,20 +376,20 @@ function Hostmode()
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = true
-                        print("Payment Accepted")
+                        Hostlog[#Hostlog+1] ="Payment Accepted"
                         modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "InvalidAmt" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        print("Invalid Amount")
+                        Hostlog[#Hostlog+1] ="Invalid Amount"
                         modem.transmit(hostport, 0, ReplyMessage)
 
                     elseif datar.ReplyMessage == "Invalid Pin" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        print("Invalid Pin")
+                        Hostlog[#Hostlog+1] ="Invalid Pin"
                         modem.transmit(hostport, 0, ReplyMessage)
                     end
                 end
@@ -350,21 +397,21 @@ function Hostmode()
         elseif message.functionCall == "SetMode" then
             if message.mode == 1 then
                 mode = 1
-                print("Mode Changed To Mode 1")
+                Hostlog[#Hostlog+1] ="Mode Changed To Mode 1"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Changed To Mode 1"
                 modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 2 then
                 mode = 2
-                print("Mode Changed To Mode 2")
+                Hostlog[#Hostlog+1] ="Mode Changed To Mode 2"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Changed To Mode 1"
                 modem.transmit(hostport, 0, ReplyMessage)
             elseif message.mode == 0 then
                 mode = 0
-                print("Mode Reset")
+                Hostlog[#Hostlog+1] ="Mode Reset"
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "Mode Reset"
@@ -381,14 +428,14 @@ function Hostmode()
             ReplyMessage.replyType = "print"
             ReplyMessage.modifyedItem = "Charge"
             ReplyMessage.data = loadedcharge
-            print("Set Charge To "..tostring(loadedcharge))
+            Hostlog[#Hostlog+1] ="Set Charge To "..tostring(loadedcharge)
         else
             print("Recived Invaild Function")
         end
     elseif mode == 1 then
         if message.functionCall == "Run" then
             if message.runningFunc == "Exchange" then
-                print("Recived Exchange Command")
+                Hostlog[#Hostlog+1] ="Recived Exchange Command"
                 sendstate.computer = os.getComputerID()
                 sendstate.status = "charge"
                 sendstate.id = message.info.id
@@ -396,7 +443,7 @@ function Hostmode()
                 sendstate.pin = message.info.pin
                 ws.send(textutils.serialise(sendstate))
                 term.setTextColor(colors.green)
-                print("Processing...")
+                Hostlog[#Hostlog+1] ="Processing..."
                 repeat
                     event, url, message = os.pullEvent("websocket_message")
                     datar = textutils.unserialise(message)
@@ -407,19 +454,19 @@ function Hostmode()
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = true
-                        print("Accepted Payment")
+                        Hostlog[#Hostlog+1] = "Accepted Payment"
                         modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "Insufficient Funds" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        print("Insufficient Funds")
+                        Hostlog[#Hostlog+1] ="Insufficient Funds"
                         modem.transmit(hostport, 0, ReplyMessage)
                     elseif datar.ReplyMessage == "Invalid Pin" then
                         ReplyMessage.functionCall = "Reply"
                         ReplyMessage.replyType = "Auth"
                         ReplyMessage.data = false
-                        print("Invalid Pin")
+                        Hostlog[#Hostlog+1] ="Invalid Pin"
                         modem.transmit(hostport, 0, ReplyMessage)
                     end
                 end
@@ -428,7 +475,7 @@ function Hostmode()
                 if message.mode == 1 then
                     mode = 1
                     term.setTextColor(colors.yellow)
-                    print("Mode Changed To Mode 1")
+                    Hostlog[#Hostlog+1] ="Mode Changed To Mode 1"
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"
                     ReplyMessage.data = "Mode Changed To Mode 1"
@@ -436,7 +483,7 @@ function Hostmode()
                 elseif message.mode == 2 then
                     mode = 2
                     term.setTextColor(colors.yellow)
-                    print("Mode Changed To Mode 2")
+                    Hostlog[#Hostlog+1] ="Mode Changed To Mode 2"
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"
                     ReplyMessage.data = "Mode Changed To Mode 1"
@@ -444,7 +491,7 @@ function Hostmode()
                 elseif message.mode == 0 then
                     mode = 0
                     term.setTextColor(colors.yellow)
-                    print("Mode Reset")
+                    Hostlog[#Hostlog+1] ="Mode Reset"
                     ReplyMessage.functionCall = "Reply"
                     ReplyMessage.replyType = "print"
                     ReplyMessage.data = "Mode Reset"
@@ -454,7 +501,7 @@ function Hostmode()
                 ReplyMessage.functionCall = "Reply"
                 ReplyMessage.replyType = "print"
                 ReplyMessage.data = "1 : Paying To You\n2 : Paying To Player"
-                print("Mode Called")
+                Hostlog[#Hostlog+1] ="Mode Called"
                 modem.transmit(hostport, 0, ReplyMessage)
             elseif message.functionCall == "SetCharge" then
                 loadedcharge = message.value
@@ -462,9 +509,9 @@ function Hostmode()
                 ReplyMessage.replyType = "print"
                 ReplyMessage.modifyedItem = "Charge"
                 ReplyMessage.data = loadedcharge
-                print("Set Charge To "..tostring(loadedcharge))
+                Hostlog[#Hostlog+1] ="Set Charge To "..tostring(loadedcharge)
             else
-                print("Recived Invaild Function")
+                Hostlog[#Hostlog+1] ="Recived Invaild Function"
             end
         
     end
@@ -497,5 +544,12 @@ if lfiledata.version ~= gfiledata.version then
     sleep(2)
     os.reboot()
 else
-    startup()
+    local configfileraw = fs.open("Config","r")
+    local configfile = configfileraw.readAll()
+    local Config = textutils.unserialise(configfile)
+    if Config.HostStartup == true then
+        parallel.waitForAll(Hostmode,HostCmd,HostLogging)
+    else
+        startup()
+    end
 end

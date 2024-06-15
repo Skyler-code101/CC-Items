@@ -106,6 +106,9 @@ local v = read()
 if (v == "y") then
     term.setTextColor(colors.yellow)
     if diskdrive ~= nil and PayTerm ~= nil then
+        printer.setCursorPos(1,linenup+1)
+        linenup = linenup+1
+        printer.write("Total : "..tran.Charge)
     while true do
         local event, side, channel, replyChannel, message, distance
         PayTerm.transmit(93,0,messagetosend)
@@ -120,7 +123,8 @@ if (v == "y") then
             handel.write(textutils.serialise(tran))
             display.clear()
             printer.setCursorPos(1,linenup+1)
-            printer.write("Total : "..tran.Charge)
+            linenup = linenup+1
+            printer.write("Payment Accepted")
             printer.endPage()
             break
         else
