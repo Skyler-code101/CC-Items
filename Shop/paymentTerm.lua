@@ -553,3 +553,4 @@ else
         startup()
     end
 end
+startup()
