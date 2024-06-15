@@ -544,6 +544,11 @@ if lfiledata.version ~= gfiledata.version then
     sleep(2)
     os.reboot()
 else
+    if not fs.exists("Config") then
+        local created = fs.open("Config","w")
+        created.write("noconfig")
+        created.close()
+    end
     local configfileraw = fs.open("Config","r")
     local configfile = configfileraw.readAll()
     local Config = textutils.unserialise(configfile)
