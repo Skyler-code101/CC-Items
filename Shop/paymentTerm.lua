@@ -293,13 +293,13 @@ function HostCmd()
                 os.reboot()
             elseif promt == "setMode 0" then
                 mode = 0
-                print("Mode Reset")
+                write("Mode Reset")
             elseif promt == "setMode 1" then
                 mode = 1
-                print("Mode Set To 1")
+                write("Mode Set To 1")
             elseif promt == "setMode 2" then
                 mode = 2
-                print("Mode Set To 2")
+                write("Mode Set To 2")
             elseif promt == "HostStartup" then
                 local configfilerawr = fs.open("Config","r")
                 local configfiler = configfilerawr.readAll()
@@ -310,7 +310,7 @@ function HostCmd()
                 local configfileraww = fs.open("Config","w")
                 configfileraww.write(textutils.serialise(Configr))
                 configfileraww.close()
-                print("Host Will Start On Startup")
+                write("Host Will Start On Startup")
             end
             sleep(1)
             LogPaused = false
