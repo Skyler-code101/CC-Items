@@ -302,7 +302,7 @@ function HostCmd()
             elseif promt == "HostStartup" then
                 local configfilerawr = fs.open("Config","r")
                 local configfiler = configfilerawr.readAll()
-                local Configr = textutils.unserialise(configfile)
+                local Configr = textutils.unserialise(configfiler)
                 configfilerawr.close()
                 Configr.HostStartup = true
                 Configr.hostPort = hostport
