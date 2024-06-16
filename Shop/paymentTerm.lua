@@ -301,7 +301,7 @@ function HostCmd()
                 print("Mode Set To 2")
             elseif promt == "HostStartup" then
                 local configfilerawr = fs.open("Config","r")
-                local configfiler = configfileraw.readAll()
+                local configfiler = configfilerawr.readAll()
                 local Configr = textutils.unserialise(configfile)
                 configfilerawr.close()
                 Configr.HostStartup = true
@@ -560,6 +560,7 @@ else
     local configfileraw = fs.open("Config","r")
     local configfile = configfileraw.readAll()
     local Config = textutils.unserialise(configfile) or {}
+    configfileraw.close()
     if Config.HostStartup == true then
         hostport = Config.hostPort
         modem.open(hostport)
