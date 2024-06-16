@@ -5,6 +5,7 @@ local gversionfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/ma
 local lfiledata = textutils.unserialise(lversionfile.readAll())
 local gfiledata = textutils.unserialise(gversionfile.readAll())
 lversionfile.close()
+local hostport = 0
 local modem = peripheral.find("modem")
 function monitorPinEnter()
     local pin = ""
@@ -235,6 +236,10 @@ elseif promt == "Version" then
     print("Version: "..lfiledata.version)
 elseif promt == "Host" then
     if peripheral.find("modem") then
+        write("Host Port > ")
+        hostport = tonumber(read())
+        modem.open(hostport)
+        print("Host Open On Port "..tostring(hostport))
         parallel.waitForAll(Hostmode,HostCmd,HostLogging)
         else
             print("No Modem Found")
@@ -254,6 +259,7 @@ function HostLogging()
         if LogPaused == false then
             term.clear()
             term.setCursorPos(1,1)
+            term.setTextColor(colors.white)
             for index, value in ipairs(Hostlog) do
                 print(value)
             end
@@ -301,17 +307,13 @@ function HostCmd()
                 configfileraww.close()
                 print("Host Will Start On Startup")
             end
+            LogPaused = false
         end
     end
 end
 function Hostmode()
-        write("Host Port > ")
-    local hostport = tonumber(read())
-    modem.open(hostport)
-    print("Host Open On Port "..tostring(hostport))
     local ReplyMessage = {}
     local sendstate = {}
-    print()
     while true do
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
         term.setTextColor(colors.blue)
@@ -554,6 +556,8 @@ else
     local configfile = configfileraw.readAll()
     local Config = textutils.unserialise(configfile) or {}
     if Config.HostStartup == true then
+        hostport = Config.hostPort
+        modem.open(hostport)
         parallel.waitForAll(Hostmode,HostCmd,HostLogging)
     else
         startup()
