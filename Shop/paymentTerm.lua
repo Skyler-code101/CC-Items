@@ -553,7 +553,8 @@ if lfiledata.version ~= gfiledata.version then
 else
     if not fs.exists("Config") then
         local created = fs.open("Config","w")
-        created.write("noconfig")
+        local configtemp = {}
+        created.write(textutils.serialise(configtemp))
         created.close()
     end
     local configfileraw = fs.open("Config","r")
