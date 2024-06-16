@@ -273,6 +273,7 @@ function HostCmd()
         local event, key, is_held = os.pullEvent("key")
         if event == "key"and key == keys.e then
             LogPaused = true
+            sleep(.1)
             local w,h = term.getSize()
             term.setCursorPos(1,h-1)
             write(">")
