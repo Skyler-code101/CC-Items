@@ -307,7 +307,7 @@ function HostCmd()
                 Configr.HostStartup = true
                 Configr.hostPort = hostport
                 local configfileraww = fs.open("Config","w")
-                configfileraww.write(Configr)
+                configfileraww.write(textutils.serialise(Configr))
                 configfileraww.close()
                 print("Host Will Start On Startup")
             end
