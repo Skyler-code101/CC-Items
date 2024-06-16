@@ -271,7 +271,7 @@ end
 function HostCmd()
     while true do
         local event, key, is_held = os.pullEvent("key")
-        if event == "key"and key == keys.slash then
+        if event == "key"and key == keys.e then
             LogPaused = true
             local w,h = term.getSize()
             term.setCursorPos(1,h-1)
