@@ -278,6 +278,7 @@ function HostCmd()
             sleep(.1)
             local w,h = term.getSize()
             term.setCursorPos(1,h-1)
+            term.setTextColor(colors.yellow)
             write(">")
             local promt = read()
             term.setTextColor(colors.green)
@@ -311,6 +312,7 @@ function HostCmd()
                 configfileraww.close()
                 print("Host Will Start On Startup")
             end
+            sleep(1)
             LogPaused = false
         end
     end
