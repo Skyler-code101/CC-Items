@@ -264,6 +264,8 @@ function HostLogging()
                 print(value)
             end
             sleep(.1)
+        else
+            sleep(.1)
         end
     end
     
@@ -303,6 +305,7 @@ function HostCmd()
                 local Configr = textutils.unserialise(configfile)
                 configfilerawr.close()
                 Configr.HostStartup = true
+                Configr.hostPort = hostport
                 local configfileraww = fs.open("Config","w")
                 configfileraww.write(Configr)
                 configfileraww.close()
