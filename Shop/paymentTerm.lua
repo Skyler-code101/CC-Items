@@ -284,8 +284,8 @@ function HostCmd()
             term.setCursorPos(1,h)
             if promt == "Close" then
                 local configfilerawr = fs.open("Config","r")
-                local configfiler = configfileraw.readAll()
-                local Configr = textutils.unserialise(configfile)
+                local configfiler = configfilerawr.readAll()
+                local Configr = textutils.unserialise(configfiler)
                 Configr.HostStartup = false
                 local configfileraww = fs.open("Config","w")
                 configfileraww.write(textutils.serialise(Configr))
