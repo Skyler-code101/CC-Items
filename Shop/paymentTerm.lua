@@ -288,7 +288,7 @@ function HostCmd()
                 local Configr = textutils.unserialise(configfile)
                 Configr.HostStartup = false
                 local configfileraww = fs.open("Config","w")
-                configfileraww.write(Configr)
+                configfileraww.write(textutils.serialise(Configr))
                 os.reboot()
             elseif promt == "setMode 0" then
                 mode = 0
