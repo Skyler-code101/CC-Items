@@ -96,7 +96,7 @@ if (promt == "1") then
             datam.playername  = datal.playername
             ws.send(textutils.serialise(datal))
             event, url, message = os.pullEvent("websocket_message")
-            data = textutils.unserialise(message)
+            data = textutils.unserialise(message) or {}
         until (data ~= nil and data.status == "Created" and data.handler == os.getComputerID() and message ~= "ping")
         datam.fulllink = data.fulllink
         local listw = fs.open("disk/ECard/Data","w")
@@ -124,7 +124,7 @@ if (fs.exists("disk/ECard/Data")) then
     ws.send(textutils.serialise(sendstate))
     repeat
         event, url, message = os.pullEvent("websocket_message")
-        datar = textutils.unserialise(message)
+        datar = textutils.unserialise(message) or {}
 
     until (datar.handler == os.getComputerID() and url == myURL)
     if datar.status == "NonExistent" then
@@ -187,7 +187,7 @@ elseif promt == "3" then
         ws.send(textutils.serialise(sendstate))
         repeat
             event, url, message = os.pullEvent("websocket_message")
-            datar = textutils.unserialise(message)
+            datar = textutils.unserialise(message) or {}
     
         until (datar.handler == os.getComputerID() and url == myURL)
         if datar.status == "NonExistent" then
@@ -213,7 +213,7 @@ elseif promt == "3" then
         print("Processing...")
         repeat
             event, url, message = os.pullEvent("websocket_message")
-            datar = textutils.unserialise(message)
+            datar = textutils.unserialise(message) or {}
     
         until (datar.handler == os.getComputerID() and url == myURL)
         if datar.status == "ReplyAuth" then
