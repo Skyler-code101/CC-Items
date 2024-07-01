@@ -121,7 +121,21 @@ local function printdata()
             sleep(.1)
     end
 end
-
+function alert()
+    local ri = peripheral.find("redstoneIntegrator")
+    while true do
+        if DeuteriumAmt <= 500 or TritiumAmt <= 500 or plasmaTemp <= 100000000 or percent <= 30 then
+            if ri then
+                ri.setOutput("back",true)
+            end
+        else
+            if ri then
+                ri.setOutput("back",false)
+            end
+        end
+        sleep(.1)
+    end
+end
 
 print("Client Loaded")
-parallel.waitForAll(receivedata,printdata)
+parallel.waitForAll(receivedata,printdata,alert)
