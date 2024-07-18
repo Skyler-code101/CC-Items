@@ -74,12 +74,16 @@ if args[1] == "config" or not fs.exists("/config_cess.txt") then
     print("Address Book Computer ID")
     config.address_book_id = tonumber(read())
 
-    local configfile = io.open("/config_cess.txt","w")
+    print("Unlock Key:")
+    local sufile = fs.open("startup","w")
+    sufile.write("local key = '"..read().."\\n'"..https.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
+    sufile.close()
+    local configfile = io.open("/config_stgd.txt","w")
     configfile:write(textutils.serialise(config))
     configfile:close()
 end
 
-local configfile = io.open("/config_cess.txt","r")
+local configfile = io.open("/config_stgd.txt","r")
 config = textutils.unserialise(configfile:read("*a"))
 configfile:close()
 
@@ -328,6 +332,7 @@ local function stargatedetect()
                 until ci.isStargateConnected() and ci.isWormholeOpen()
                 ci.disconnectStargate()
             else 
+                
                 monitor.setTextColor(colors.blue)
                 sendvisual("Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
@@ -335,6 +340,12 @@ local function stargatedetect()
                 Connectedaddress = readaddress(event[2])
                 connectedaddressname = addresst.name
                 direction = 'Incoming'
+
+                sleep(15)
+                repeat
+                    sleep()
+                until ci.isStargateConnected() and ci.isWormholeOpen()
+                ci.disconnectStargate()
             end
             
         elseif (event[1] == "stargate_outgoing_wormhole") then
