@@ -75,9 +75,29 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     config.address_book_id = tonumber(read())
 
     print("Unlock Key:")
+    local key = read()
     local sufile = fs.open("startup","w")
-    sufile.write("local key = '"..read().."\\n'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
+    sufile.write("local key = '"..key.."'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
     sufile.close()
+    local peripherala = peripheral.find("drive")
+    local foundinit = false
+    if peripherala.getMountPath() ~= nil then
+        print("Found Key Drive")
+        foundinit = true
+    else
+        print("Please Put In A Key Storage Device")
+    end
+    repeat
+        peripherala = peripheral.find("drive")
+    until peripherala.getMountPath() ~= nil
+    if foundinit == false then
+        print("Found Key Drive\nPrinting Key On Drive")
+    else
+        print("Printing Key On Drive")
+    end
+    local KeyFile = fs.open(fs.combine(peripherala.getMountPath(),"./STGDKey"),"w")
+    KeyFile.write(key)
+    KeyFile.close()
     local configfile = io.open("/config_stgd.txt","w")
     configfile:write(textutils.serialise(config))
     configfile:close()
