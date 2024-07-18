@@ -1,9 +1,14 @@
-local modem = peripheral.find("modem")
+local modems = {peripheral.find("modem")}
 local monitor = peripheral.find("monitor")
+local modem
+for k,v in pairs(modems) do
+    if v.isWireless() == true then
+        modem = v
+    end
+end
 if modem then
     rednet.open(peripheral.getName(modem))
 end
-
 local energy = 0
 local cap = 0
 local percent =0
@@ -13,6 +18,7 @@ local npercent = 0
 local plasmaTemp = 0
 local DeuteriumAmt = 0
 local TritiumAmt = 0
+local SleepMode = false
 local connected = false
 local w,h = monitor.getSize()
 local function prettyEnergy(energy)
@@ -55,10 +61,12 @@ function receivedata()
             plasmaTemp = message.plasmaTemp
             DeuteriumAmt = message.DeuteriumAmt
             TritiumAmt = message.TritiumAmt
+            SleepMode = message.SleepMode
 		    local per = energy/cap
-		    percent =  per*100
+		    percent =  per
 		    local nper = nenergy/ncap
-		    npercent =  nper*100
+		    npercent =  nper
+
         end
         
         local id = rednet.lookup("ZeroFusion", "576")
@@ -98,21 +106,15 @@ local function printdata()
             monprint("===========================================================================") 
             monprint("===========================================================================")
 		    monitor.setTextColor(colors.blue)
-            monprint("Power Held Percentage : "..tostring(percent).."%")
-            monprint("Network Power Percentage : "..tostring(npercent).."%")
-		    monitor.setTextColor(colors.lightGray)
-            monprint("===========================================================================")
-		    monitor.setTextColor(colors.lightBlue)
-            monprint("Power Held : "..prettyEnergy(energy).."")
-            monprint("Network Power : "..prettyEnergy(nenergy).."")
-		    monitor.setTextColor(colors.lightGray)
-            monprint("===========================================================================")
-		    monitor.setTextColor(colors.pink)
-			monprint("Core Temp : "..prettyTemp(plasmaTemp).."")
-		    monitor.setTextColor(colors.orange)
-			monprint("Deuterium : "..DeuteriumAmt.."mB")
-		    monitor.setTextColor(colors.green)
-			monprint("Tritium : "..TritiumAmt.."mB")
+            monprint("Power Held Percentage : ")
+		    monitor.setTextColor(colors.magenta)
+            monprint(" "..string.rep("\143",(w-2)*percent).." ")
+            
+		    monitor.setTextColor(colors.blue)
+            monprint("Network Power Percentage :")
+		    monitor.setTextColor(colors.magenta)
+            monprint(" "..string.rep("\143",(w-2)*npercent).." ")
+
 		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================")
 		    monitor.setTextColor(colors.gray)

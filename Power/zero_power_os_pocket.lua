@@ -1,4 +1,3 @@
-
 local modems = {peripheral.find("modem")}
 local monitor = peripheral.find("monitor")
 local modem
@@ -21,7 +20,7 @@ local DeuteriumAmt = 0
 local TritiumAmt = 0
 local SleepMode = false
 local connected = false
-local w,h = monitor.getSize()
+local w,h = term.getSize()
 local function prettyEnergy(energy)
     if energy > 1000000000000 then
         return string.format("%.2f", energy/1000000000000).." TFE"
@@ -64,9 +63,9 @@ function receivedata()
             TritiumAmt = message.TritiumAmt
             SleepMode = message.SleepMode
 		    local per = energy/cap
-		    percent =  per
+		    percent =  per*100
 		    local nper = nenergy/ncap
-		    npercent =  nper
+		    npercent =  nper*100
         end
         
         local id = rednet.lookup("ZeroFusion", "576")
@@ -78,66 +77,68 @@ function receivedata()
         
     end
 end
-local linenu = 0
-local function monprint(text)
-
-    linenu = linenu + 1
-    monitor.setCursorPos(1,linenu)
-    monitor.write(text)
-end
 local function printdata()
     while true do
-            linenu = 0
-            monitor.clear()
+            term.clear()
             if (connected) then
-                monitor.setTextColor(colors.green)
-                monprint("Server Online")
+                term.setTextColor(colors.green)
+                print("Server Online")
             else
-                monitor.setTextColor(colors.red)
-                monprint("Server Dead")
+                term.setTextColor(colors.red)
+                print("Server Dead")
             end
-            monitor.setTextColor(colors.green)
-		    monitor.setTextColor(colors.lightGray)
-            monprint("===========================================================================") 
-		    monitor.setTextColor(colors.green)
-            monprint("Hello Welcome To ZeroFusion(ZeroSPTN)")
-            monprint("Client Mode")
-		    monitor.setTextColor(colors.lightGray)
-            monprint("===========================================================================") 
-            monprint("===========================================================================")
-		    monitor.setTextColor(colors.blue)
-            monprint("Power Held Percentage : ")
-		    monitor.setTextColor(colors.magenta)
-            monprint(" "..string.rep("\143",(w-2)*percent).." ")
+            term.setTextColor(colors.green)
+		    term.setTextColor(colors.lightGray)
+            for i = 1, w do
+                term.write("=")
+            end
+		    term.setTextColor(colors.green)
+            print("Hi Welcome To ZeroFusion")
+            print("Client Mode")
+		    term.setTextColor(colors.lightGray)
+            for i = 1, w do
+                term.write("=")
+            end
+            for i = 1, w do
+                term.write("=")
+            end
+		    term.setTextColor(colors.blue)
+            print("Power Held Percentage : "..string.format("%.2f", percent).."%")
             
-		    monitor.setTextColor(colors.blue)
-            monprint("Network Power Percentage :")
-		    monitor.setTextColor(colors.magenta)
-            monprint(" "..string.rep("\143",(w-2)*npercent).." ")
-
-		    monitor.setTextColor(colors.lightGray)
-            monprint("===========================================================================")
-		    monitor.setTextColor(colors.gray)
-            monitor.setCursorPos(1,h)
-            monitor.write("Zero Creates Inc.")
+            print("Network Power Percentage : "..string.format("%.2f", npercent).."%")
+		    term.setTextColor(colors.lightGray)
+            for i = 1, w do
+                term.write("=")
+            end
+		    term.setTextColor(colors.lightBlue)
+            print("Power Held : "..prettyEnergy(energy).."")
+            print("Network Power : "..prettyEnergy(nenergy).."")
+		    term.setTextColor(colors.lightGray)
+            for i = 1, w do
+                term.write("=")
+            end
+			if SleepMode == false then
+                term.setTextColor(colors.pink)
+				print("Core Temp : "..prettyTemp(plasmaTemp).."")
+			else
+                term.setTextColor(colors.cyan)
+				print("IN SLEEP MODE CORE HEAT REDUSED")
+			end
+		    term.setTextColor(colors.orange)
+			print("Deuterium : "..DeuteriumAmt.."mB")
+		    term.setTextColor(colors.green)
+			print("Tritium : "..TritiumAmt.."mB")
+		    term.setTextColor(colors.lightGray)
+            for i = 1, w do
+                term.write("=")
+            end
+		    term.setTextColor(colors.gray)
+            term.setCursorPos(1,h)
+            term.write("Zero Creates Inc.")
             sleep(.1)
     end
 end
-function alert()
-    local ri = peripheral.find("redstoneIntegrator")
-    while true do
-        if DeuteriumAmt <= 500 or TritiumAmt <= 500 or percent*100 <= 30 then
-            if ri then
-                ri.setOutput("back",true)
-            end
-        else
-            if ri then
-                ri.setOutput("back",false)
-            end
-        end
-        sleep(.1)
-    end
-end
+
 
 print("Client Loaded")
-parallel.waitForAll(receivedata,printdata,alert)
+parallel.waitForAll(receivedata,printdata)

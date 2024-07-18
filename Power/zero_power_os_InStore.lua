@@ -1,4 +1,6 @@
 
+
+
 local modems = {peripheral.find("modem")}
 local monitor = peripheral.find("monitor")
 local modem
@@ -67,6 +69,7 @@ function receivedata()
 		    percent =  per
 		    local nper = nenergy/ncap
 		    npercent =  nper
+
         end
         
         local id = rednet.lookup("ZeroFusion", "576")
@@ -99,9 +102,9 @@ local function printdata()
             monitor.setTextColor(colors.green)
 		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================") 
-		    monitor.setTextColor(colors.green)
+		    monitor.setTextColor(colors.blue)
             monprint("Hello Welcome To ZeroFusion(ZeroSPTN)")
-            monprint("Client Mode")
+            monprint("In Store Mode")
 		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================") 
             monprint("===========================================================================")
@@ -114,7 +117,24 @@ local function printdata()
             monprint("Network Power Percentage :")
 		    monitor.setTextColor(colors.magenta)
             monprint(" "..string.rep("\143",(w-2)*npercent).." ")
+            monitor.setTextColor(colors.lightBlue)
+            monprint("Power Held : "..prettyEnergy(energy).."")
 
+            monprint("Network Power : "..prettyEnergy(nenergy).."")
+
+		    monitor.setTextColor(colors.lightGray)
+            monprint("===========================================================================")
+			if SleepMode == false then
+                monitor.setTextColor(colors.pink)
+				monprint("Core Temp : "..prettyTemp(plasmaTemp).."")
+			else
+                monitor.setTextColor(colors.cyan)
+				monprint("IN SLEEP MODE CORE HEAT REDUSED")
+			end
+		    monitor.setTextColor(colors.orange)
+			monprint("Deuterium : "..DeuteriumAmt.."mB")
+		    monitor.setTextColor(colors.green)
+			monprint("Tritium : "..TritiumAmt.."mB")
 		    monitor.setTextColor(colors.lightGray)
             monprint("===========================================================================")
 		    monitor.setTextColor(colors.gray)
@@ -138,6 +158,7 @@ function alert()
         sleep(.1)
     end
 end
+
 
 print("Client Loaded")
 parallel.waitForAll(receivedata,printdata,alert)
