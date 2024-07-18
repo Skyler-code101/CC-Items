@@ -63,9 +63,9 @@ function receivedata()
             TritiumAmt = message.TritiumAmt
             SleepMode = message.SleepMode
 		    local per = energy/cap
-		    percent =  per*100
+		    percent =  per
 		    local nper = nenergy/ncap
-		    npercent =  nper*100
+		    npercent =  nper
         end
         
         local id = rednet.lookup("ZeroFusion", "576")
@@ -80,6 +80,7 @@ end
 local function printdata()
     while true do
             term.clear()
+            term.setCursorPos(1,1)
             if (connected) then
                 term.setTextColor(colors.green)
                 print("Server Online")
@@ -89,49 +90,42 @@ local function printdata()
             end
             term.setTextColor(colors.green)
 		    term.setTextColor(colors.lightGray)
-            for i = 1, w do
-                term.write("=")
-            end
+            print(string.rep("=",w))
 		    term.setTextColor(colors.green)
-            print("Hi Welcome To ZeroFusion")
+            print("Welcome To ZeroFusion")
             print("Client Mode")
 		    term.setTextColor(colors.lightGray)
-            for i = 1, w do
-                term.write("=")
-            end
-            for i = 1, w do
-                term.write("=")
-            end
+            print(string.rep("=",w))
+            print(string.rep("=",w))
 		    term.setTextColor(colors.blue)
-            print("Power Held Percentage : "..string.format("%.2f", percent).."%")
+            print("Power Held Percentage : ")
+		    term.setTextColor(colors.magenta)
+            print(" "..string.rep("\143",(w-2)*percent).." ")
             
-            print("Network Power Percentage : "..string.format("%.2f", npercent).."%")
+		    term.setTextColor(colors.blue)
+            print("Network Power Percentage :")
+		    term.setTextColor(colors.magenta)
+            print(" "..string.rep("\143",(w-2)*npercent).." ")
+
 		    term.setTextColor(colors.lightGray)
-            for i = 1, w do
-                term.write("=")
-            end
 		    term.setTextColor(colors.lightBlue)
             print("Power Held : "..prettyEnergy(energy).."")
             print("Network Power : "..prettyEnergy(nenergy).."")
 		    term.setTextColor(colors.lightGray)
-            for i = 1, w do
-                term.write("=")
-            end
+            print(string.rep("=",w))
 			if SleepMode == false then
                 term.setTextColor(colors.pink)
 				print("Core Temp : "..prettyTemp(plasmaTemp).."")
 			else
                 term.setTextColor(colors.cyan)
-				print("IN SLEEP MODE CORE HEAT REDUSED")
+				print("IN SLEEP MODE")
 			end
 		    term.setTextColor(colors.orange)
 			print("Deuterium : "..DeuteriumAmt.."mB")
 		    term.setTextColor(colors.green)
 			print("Tritium : "..TritiumAmt.."mB")
 		    term.setTextColor(colors.lightGray)
-            for i = 1, w do
-                term.write("=")
-            end
+            print(string.rep("=",w))
 		    term.setTextColor(colors.gray)
             term.setCursorPos(1,h)
             term.write("Zero Creates Inc.")

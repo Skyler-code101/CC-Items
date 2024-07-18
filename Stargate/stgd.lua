@@ -204,13 +204,17 @@ local function log(text)
     print('['..getDate().."] > "..text)
     term.setTextColor(colors.white)
 end
-local linenu = 0
+local linenu = 2
 local function sendvisual(text)
     local w,h = monitor.getSize()
     if (linenu == h-1) then
         monitor.clear()
+        monitor.setCursorPos(1,1)
+        monitor.write("STGD Log")
+        monitor.setCursorPos(1,2)
+        monitor.write(string.rep("=",w))
 
-        linenu = 0
+        linenu = 2
     end
     linenu = linenu + 1
     monitor.setCursorPos(1,linenu)
@@ -496,6 +500,14 @@ function varUpdate()
         sleep(.1)
     end
 end
+monitor.clear()
+monitor.setCursorPos(1,1)
+monitor.setTextColor(colors.green)
+monitor.write("STGD Log")
+monitor.setCursorPos(1,2)
+monitor.setTextColor(colors.lightGray)
+monitor.write(string.rep("=",w))
+
 parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate)
 
 -- Helped By JajaSteele
