@@ -76,7 +76,7 @@ if args[1] == "config" or not fs.exists("/config_cess.txt") then
 
     print("Unlock Key:")
     local sufile = fs.open("startup","w")
-    sufile.write("local key = '"..read().."\\n'"..https.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
+    sufile.write("local key = '"..read().."\\n'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
     sufile.close()
     local configfile = io.open("/config_stgd.txt","w")
     configfile:write(textutils.serialise(config))

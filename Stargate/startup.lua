@@ -18,7 +18,7 @@ if not commandToRun then
 
     settings.save()
 
-    commandToRun = "about"
+    commandToRun = "stgd"
 
 end
 
