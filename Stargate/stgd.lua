@@ -101,6 +101,7 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     local configfile = io.open("/config_stgd.txt","w")
     configfile:write(textutils.serialise(config))
     configfile:close()
+    os.reboot()
 end
 
 local configfile = io.open("/config_stgd.txt","r")
