@@ -1,3 +1,6 @@
+
+
+
 local monitor = peripheral.find("monitor")
 local w,h = monitor.getSize()
 monitor.clear()
@@ -33,27 +36,30 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     print("Welcome to your STGD (Security Transport Gate Device) Setup Screen")
     term.setTextColor(colors.blue)
     print("Name of this area?")
+    term.setTextColor(colors.yellow)
     config.name = read()
     term.setTextColor(colors.blue)
     print("Range? (in blocks)")
+    term.setTextColor(colors.yellow)
     config.range = tonumber(read())
     term.setTextColor(colors.blue)
     print("Startup with computer? (y/n)")
+    term.setTextColor(colors.lightGray)
+    print("Warning Saying y To this Will Lock Your STGD With A Key Provided At Final Setup Input")
+    term.setTextColor(colors.yellow)
     config.autostart = read():lower()
     if config.autostart == "y" then
         config.autostart = true
-        local startupfile = io.open("/startup","w")
-        startupfile:write([[ shell.execute("]]..shell.getRunningProgram()..[[")]])
-        startupfile:close()
     else
         config.autostart = false
-        fs.delete("/startup")
     end
     term.setTextColor(colors.blue)
     print("Owner Name? (ignored by detection, and used for chat)")
+    term.setTextColor(colors.yellow)
     config.owner = read()
     term.setTextColor(colors.blue)
     print("Discord Integration? (y/n)")
+    term.setTextColor(colors.yellow)
     config.isDiscord = read():lower()
     if config.isDiscord == "y" then
         config.isDiscord = true
@@ -64,6 +70,7 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     end
     term.setTextColor(colors.blue)
     print("Chatbox Integration? (y/n)")
+    term.setTextColor(colors.yellow)
     config.isChatbox = read():lower()
     if config.isChatbox == "y" then
         config.isChatbox = true
@@ -72,9 +79,16 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     end
     term.setTextColor(colors.blue)
     print("Address Book Computer ID")
+    term.setTextColor(colors.yellow)
     config.address_book_id = tonumber(read())
 
-    print("Unlock Key:")
+    term.setTextColor(colors.blue)
+    print("Auto Close Time (In Seconds)")
+    term.setTextColor(colors.yellow)
+    config.autoClose = tonumber(read())
+    
+    if config.autostart == true then
+        print("Unlock Key:")
     local key = read()
     local sufile = fs.open("startup","w")
     sufile.write("local key = '"..key.."'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
@@ -98,6 +112,8 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     local KeyFile = fs.open(fs.combine(peripherala.getMountPath(),"./STGDKey"),"w")
     KeyFile.write(key)
     KeyFile.close()
+    end
+    
     local configfile = io.open("/config_stgd.txt","w")
     configfile:write(textutils.serialise(config))
     configfile:close()
@@ -327,14 +343,17 @@ local function readaddress(address)
     end
     return finished
 end
-
-
+local opentime
+opentime = 0
 local Connectedaddress = "Not Connected"
 local connectedaddressname = "Not Connected"
 local direction = "Not Connected"
+local isIncoming = false
+local Chevesengaged = 0
 local owneronline = false
 local function stargatedetect()
     while true do
+
         local event = {os.pullEvent()}
         if (event[1] == "stargate_incoming_wormhole") then
             if (redstonei ~= nil) then
@@ -361,12 +380,19 @@ local function stargatedetect()
                 Connectedaddress = readaddress(event[2])
                 connectedaddressname = addresst.name
                 direction = 'Incoming'
-
-                sleep(15)
+                local init = config.autoClose
+                opentime = init
                 repeat
                     sleep()
                 until ci.isStargateConnected() and ci.isWormholeOpen()
-                ci.disconnectStargate()
+                repeat
+                    opentime = init
+                    init = init -1
+                    sleep(1)
+                until init == 0 or ci.isWormholeOpen()== false
+                if ci.isWormholeOpen() == true then
+                    ci.disconnectStargate()
+                end
             end
             
         elseif (event[1] == "stargate_outgoing_wormhole") then
@@ -379,8 +405,24 @@ local function stargatedetect()
             Connectedaddress = readaddress(event[2])
             connectedaddressname = addresst.name
             direction = 'Outgoing'
-        elseif (event[1] == "stargate_chevron_engaged" and event[4] and redstonei ~= nil) then
+            local init = config.autoClose
+            opentime = init
+                repeat
+                    sleep()
+                until ci.isStargateConnected() and ci.isWormholeOpen()
+                repeat
+                    init = init -1
+                    sleep(1)
+                    opentime = init
+                until init == 0 or ci.isWormholeOpen()== false
+                if ci.isWormholeOpen() == true then
+                    ci.disconnectStargate()
+                end
+        elseif (event[1] == "stargate_chevron_engaged") then
+            if redstonei ~= nil and event[4] == true then
                 redstonei.setOutput("north",true)
+            end
+            isIncoming = event[4]
         elseif (event[1] == "stargate_reset" and redstonei ~= nil) then
             redstonei.setOutput("north",false)
         elseif (event[1] == "stargate_deconstructing_entity" and event[5] == true) then
@@ -403,7 +445,16 @@ local function printoutterm()
     term.setTextColor(colors.green)
     print("Welcome To the STGD (Security Transport Gate Device) \n I Am Your Security Termanal \n \n")
     term.setTextColor(colors.lightBlue)
-    print("Current Address : "..Connectedaddress.."\nCurrent Address Name : "..connectedaddressname.."\nDirection : "..direction.."\n")
+    
+    if Chevesengaged >= 1 then
+        if opentime ~= 0 then
+            print("Current Address : "..Connectedaddress.."\nCurrent Address Name : "..connectedaddressname.."\nDirection : "..direction.." ("..tostring(opentime)..")".."\n")
+        else
+            print("Wormhole "..direction.."\nEngaged Chevrons : "..tostring(Chevesengaged).."\n\n")
+        end 
+    else
+        print("\n\n\n")
+    end
     term.setTextColor(colors.blue)
     print("Stargate Lock : "..tostring(stargateDisallowed).."\n")
     term.setTextColor(colors.red)
@@ -434,7 +485,17 @@ local function keybinds()
         end
     end
 end
-
-parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm)
+function varUpdate()
+    while true do
+        Chevesengaged = ci.getChevronsEngaged()
+        if isIncoming == true then
+            direction = 'Incoming'
+        else
+            direction = 'Outgoing'
+        end
+        sleep(.1)
+    end
+end
+parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate)
 
 -- Helped By JajaSteele
