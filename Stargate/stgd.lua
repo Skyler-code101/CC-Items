@@ -463,7 +463,7 @@ local function printoutterm()
     print("Stargate Lock : "..tostring(stargateDisallowed).."\n")
     term.setTextColor(colors.red)
     print("Discoonnect Stargate \n")
-    print("Clear Monitor ")
+    print("Clear Log ")
     sleep(.1)
     end
     
@@ -484,7 +484,12 @@ local function keybinds()
                 ci.disconnectStargate()
             elseif (event[1] == "mouse_click" and event[4] == 18) then
                 monitor.clear()
-                linenu = 0
+                monitor.setCursorPos(1,1)
+                monitor.setTextColor(colors.green)
+                monitor.write("STGD Log")
+                monitor.setCursorPos(1,2)
+                monitor.setTextColor(colors.lightGray)
+                linenu = 2
             end
         end
     end
