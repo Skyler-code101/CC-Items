@@ -28,7 +28,7 @@ local args = {...}
 
 local config = {}
 
-if args[1] == "config" or not fs.exists("/config_cess.txt") then
+if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     term.setTextColor(colors.green)
     print("Welcome to your STGD (Security Transport Gate Device) Setup Screen")
     term.setTextColor(colors.blue)
