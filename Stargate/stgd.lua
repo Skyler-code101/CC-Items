@@ -1,13 +1,19 @@
 
 
-return function()
-    
+
 local monitor = peripheral.find("monitor")
 local w,h = monitor.getSize()
 monitor.clear()
 local ci = peripheral.find("advanced_crystal_interface")
 local stargateDisallowed = false
 local monitortext = {}
+if not fs.exists("/DiscordHook.lua") then
+    local file = http.get("https://raw.githubusercontent.com/Wendelstein7/DiscordHook-CC/master/DiscordHook.lua")
+    local file2 = io.open("/DiscordHook.lua", "w")
+    file2:write(file.readAll())
+    file2:close()
+    file.close()
+end
 
 local redstonei = peripheral.find("redstoneIntegrator")
 local modems = {peripheral.find("modem")}
@@ -21,10 +27,11 @@ end
 if modem then
     rednet.open(peripheral.getName(modem))
 end
+local args = {...}
 
 local config = {}
 
-if not fs.exists("/config_stgd.txt") then
+if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     term.setTextColor(colors.green)
     print("Welcome to your STGD (Security Transport Gate Device) Setup Screen")
     term.setTextColor(colors.blue)
@@ -132,6 +139,7 @@ local use_discord
 local success, discord_hook
 
 if config.isDiscord then
+    local discord = require("DiscordHook")
     success, discord_hook = discord.createWebhook(config.discordWebhook)
 
     if not success then
@@ -583,5 +591,3 @@ end
 parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate,loopmonitor)
 
 -- Helped By JajaSteele
-
-end
