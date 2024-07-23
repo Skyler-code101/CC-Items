@@ -21,11 +21,10 @@ end
 if modem then
     rednet.open(peripheral.getName(modem))
 end
-local args = {...}
 
 local config = {}
 
-if args[1] == "config" or not fs.exists("/config_stgd.txt") then
+if not fs.exists("/config_stgd.txt") then
     term.setTextColor(colors.green)
     print("Welcome to your STGD (Security Transport Gate Device) Setup Screen")
     term.setTextColor(colors.blue)
