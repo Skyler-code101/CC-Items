@@ -4,14 +4,18 @@ local versionpublic = textutils.unserialise(http.get("https://github.com/Skyler-
 
 local versionlocal
 if fs.exists("version") == true then
-    versionlocal = textutils.unserialise(fs.open("version","r").readAll())
+    local versiontemp = fs.open("version","r")
+    versionlocal = textutils.unserialise(versiontemp.readAll())
+    versiontemp.close()
 else 
     versionlocal = { version = "0.0.0" }
 end
 function waitTillUpdate()
     while true do
         local versionpubliccheck = textutils.unserialise(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/version").readAll())
-        local versionlocalcheck = textutils.unserialise(fs.open("version","r").readAll())
+        local versionlocalcheckfile = fs.open("version","r")
+        local versionlocalcheck = textutils.unserialise(versionlocalcheckfile.readAll())
+        versionlocalcheckfile.close()
         if versionpubliccheck.version ~= versionlocalcheck.version and versionpubliccheck.installable == true then
             os.reboot()
         end
