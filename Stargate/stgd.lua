@@ -87,6 +87,17 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     term.setTextColor(colors.yellow)
     config.autoClose = tonumber(read())
     
+    
+    term.setTextColor(colors.blue)
+    print("Lock stargate When Leaveing? (y/n)")
+    term.setTextColor(colors.yellow)
+    config.Locked = read():lower()
+    if config.Locked == "y" then
+        config.Locked = true
+    else
+        config.Locked = false
+    end
+
     if config.autostart == true then
         print("Unlock Key:")
     local key = read()
@@ -158,7 +169,7 @@ end
 local address_cache = {}
 local function addressLookupCached(lookup_value)
     if not lookup_value then
-        return {name="Unknown Address"}
+        return {name=table.concat(lookup_value, "-")}
     end
 
     local id_to_send = config.address_book_id
@@ -185,11 +196,11 @@ local function addressLookupCached(lookup_value)
                 end
                 return msg
             else
-                return {name="Unknown Address"}
+                return {name=table.concat(lookup_value, "-")}
             end
         end
     end
-    return {name="Unknown Address"}
+    return {name=table.concat(lookup_value, "-")}
 end
 local chat_queue = {}
 
@@ -207,7 +218,7 @@ end
 local linenu = 2
 local function sendvisual(text)
     local w,h = monitor.getSize()
-    if (linenu == h-1) then
+    if (linenu == h-2) then
         monitor.clear()
         monitor.setCursorPos(1,1)
         monitor.write("STGD Log")
@@ -354,7 +365,8 @@ local connectedaddressname = "Not Connected"
 local direction = "Not Connected"
 local isIncoming = false
 local Chevesengaged = 0
-local owneronline = false
+local owneroffline = false
+local ownerinRange = false
 local function stargatedetect()
     while true do
 
@@ -366,7 +378,7 @@ local function stargatedetect()
             local addresst = addressLookupCached(event[2])
             
             log("Incoming Wormhole From "..addresst.name)
-            if (stargateDisallowed or radar.getPlayerPos(config.owner)['x'] == nil) then
+            if (stargateDisallowed or owneroffline ) then
                 monitor.setTextColor(colors.lightBlue)
                 sendvisual("Denied Incoming Wormhole From")
                 monitor.setTextColor(colors.yellow)
@@ -396,6 +408,9 @@ local function stargatedetect()
                 until init == 0 or ci.isWormholeOpen()== false
                 if ci.isWormholeOpen() == true then
                     ci.disconnectStargate()
+                    opentime = 0
+                else
+                    opentime = 0
                 end
             end
             
@@ -421,20 +436,26 @@ local function stargatedetect()
                 until init == 0 or ci.isWormholeOpen()== false
                 if ci.isWormholeOpen() == true then
                     ci.disconnectStargate()
+                    opentime = 0
+                else
+                    opentime = 0
                 end
         elseif (event[1] == "stargate_chevron_engaged") then
             if redstonei ~= nil and event[4] == true then
                 redstonei.setOutput("north",true)
             end
             isIncoming = event[4]
+            opentime = 0
         elseif (event[1] == "stargate_reset" and redstonei ~= nil) then
             redstonei.setOutput("north",false)
+            opentime = 0
         elseif (event[1] == "stargate_deconstructing_entity" and event[5] == true) then
             ci.disconnectStargate()
         elseif (event[1] == "stargate_disconnected") then
             Connectedaddress = "Not Connected"
             connectedaddressname = "Not Connected"
             direction = 'Not Connected'
+            opentime = 0
         end
     end 
 end
@@ -442,7 +463,7 @@ end
 local function printoutterm()
 	while true do
     term.clear()
-    if (owneronline == false) then
+    if (ownerinRange == false) then
         term.setTextColor(colors.orange)
         print("Termanal Locked")
     end
@@ -455,9 +476,11 @@ local function printoutterm()
             print("Current Address : "..Connectedaddress.."\nCurrent Address Name : "..connectedaddressname.."\nDirection : "..direction.." ("..tostring(opentime)..")".."\n")
         else
             print("Wormhole "..direction.."\nEngaged Chevrons : "..tostring(Chevesengaged).."\n\n")
+            opentime = 0
         end 
     else
         print("\n\n\n")
+        opentime = 0
     end
     term.setTextColor(colors.blue)
     print("Stargate Lock : "..tostring(stargateDisallowed).."\n")
@@ -471,8 +494,8 @@ end
 local function keybinds()
     while true do
     	local event = {os.pullEvent()}
-        owneronline = radar.isPlayerInRange(config.range or 100, config.owner)
-        if (owneronline) then
+        ownerinRange = radar.isPlayerInRange(config.range or 100, config.owner)
+        if (ownerinRange) then
 
             if (event[1] == "mouse_click" and event[4] == 14) then
                 if (stargateDisallowed) then
@@ -482,6 +505,7 @@ local function keybinds()
                 end
             elseif (event[1] == "mouse_click" and event[4] == 16) then
                 ci.disconnectStargate()
+                opentime = 0
             elseif (event[1] == "mouse_click" and event[4] == 18) then
                 monitor.clear()
                 monitor.setCursorPos(1,1)
@@ -502,6 +526,7 @@ function varUpdate()
         else
             direction = 'Outgoing'
         end
+        owneroffline = radar.getPlayerPos(config.owner)['x'] == nil and config.Locked
         sleep(.1)
     end
 end
@@ -512,7 +537,57 @@ monitor.write("STGD Log")
 monitor.setCursorPos(1,2)
 monitor.setTextColor(colors.lightGray)
 monitor.write(string.rep("=",w))
-
-parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate)
+if config.Locked == nil then
+    config.Locked = true
+end
+function loopmonitor()
+    while true do
+        monitor.setCursorPos(1,h-2)
+        monitor.write(string.rep(" ",w))
+        monitor.setCursorPos(1,h-1)
+        monitor.write(string.rep(" ",w))
+        monitor.setCursorPos(1,h)
+        monitor.write(string.rep(" ",w))
+        monitor.setCursorPos(1,1)
+        monitor.write(string.rep(" ",w))
+        monitor.setCursorPos(1,2)
+        monitor.write(string.rep(" ",w))
+        monitor.setCursorPos(1,1)
+        monitor.setTextColor(colors.green)
+        monitor.write("STGD Log")
+        monitor.setCursorPos(1,2)
+        monitor.setTextColor(colors.lightGray)
+        monitor.write(string.rep("=",w))
+        if Chevesengaged >= 1 then
+            if opentime ~= 0 then
+                monitor.setCursorPos(1,h-1)
+                monitor.setTextColor(colors.blue)
+                monitor.write("Wormhole "..direction.." ("..tostring(opentime)..")")
+                monitor.setCursorPos(1,h)
+                monitor.setTextColor(colors.blue)
+                monitor.write(""..connectedaddressname)
+            else
+                monitor.setCursorPos(1,h-1)
+                monitor.setTextColor(colors.red)
+                monitor.write("Wormhole "..direction)
+                monitor.setCursorPos(1,h)
+                monitor.setTextColor(colors.red)
+                monitor.write("Chevrons: "..tostring(Chevesengaged))
+            end
+        else
+            if stargateDisallowed == true then
+                monitor.setCursorPos(1,h-1)
+                monitor.setTextColor(colors.yellow)
+                monitor.write("Denying Incoming Wormholes")
+                
+            end
+        end
+        monitor.setCursorPos(1,h-2)
+        monitor.setTextColor(colors.lightGray)
+        monitor.write(string.rep("=",w))
+        sleep(.1)
+    end
+end
+parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate,loopmonitor)
 
 -- Helped By JajaSteele

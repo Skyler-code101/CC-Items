@@ -20,6 +20,7 @@ local plasmaTemp = 0
 local DeuteriumAmt = 0
 local TritiumAmt = 0
 local SleepMode = false
+local AlertMode = false
 local connected = false
 local w,h = monitor.getSize()
 local function prettyEnergy(energy)
@@ -67,6 +68,7 @@ function receivedata()
 		    percent =  per
 		    local nper = nenergy/ncap
 		    npercent =  nper
+            AlertMode = message.AlertMode
         end
         
         local id = rednet.lookup("ZeroFusion", "576")
@@ -126,7 +128,7 @@ end
 function alert()
     local ri = peripheral.find("redstoneIntegrator")
     while true do
-        if DeuteriumAmt <= 500 or TritiumAmt <= 500 or percent*100 <= 30 then
+        if AlertMode == true or connected == false then
             if ri then
                 ri.setOutput("back",true)
             end
