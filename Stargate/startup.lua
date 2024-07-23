@@ -6,7 +6,7 @@ if not commandToRun then
 
         description = "Specifies the command to run on startup",
 
-        default = "link",
+        default = "sgtdboot",
 
         type = "string"
 
@@ -18,7 +18,7 @@ if not commandToRun then
 
     settings.save()
 
-    commandToRun = "link"
+    commandToRun = "sgtdboot"
 
 end
 
