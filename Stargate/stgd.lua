@@ -81,11 +81,22 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
     print("Address Book Computer ID")
     term.setTextColor(colors.yellow)
     config.address_book_id = tonumber(read())
-
+    
     term.setTextColor(colors.blue)
-    print("Auto Close Time (In Seconds)")
+    print("Startup with computer? (y/n)")
+    term.setTextColor(colors.lightGray)
+    print("Warning Saying y To this Will Lock Your STGD With A Key Provided At Final Setup Input")
     term.setTextColor(colors.yellow)
-    config.autoClose = tonumber(read())
+    config.autoclosebool = read():lower()
+    if config.autoclosebool == "y" then
+        config.autoclosebool = true
+        term.setTextColor(colors.blue)
+        print("Auto Close Time (In Seconds)")
+        term.setTextColor(colors.yellow)
+        config.autoClose = tonumber(read())
+    else
+        config.autoclosebool = false
+    end
     
     
     term.setTextColor(colors.blue)
@@ -396,7 +407,8 @@ local function stargatedetect()
                 Connectedaddress = readaddress(event[2])
                 connectedaddressname = addresst.name
                 direction = 'Incoming'
-                local init = config.autoClose
+                if config.autoclosebool == true then
+                    local init = config.autoClose
                 opentime = init
                 repeat
                     sleep()
@@ -412,6 +424,8 @@ local function stargatedetect()
                 else
                     opentime = 0
                 end
+                end
+                
             end
             
         elseif (event[1] == "stargate_outgoing_wormhole") then
@@ -424,7 +438,8 @@ local function stargatedetect()
             Connectedaddress = readaddress(event[2])
             connectedaddressname = addresst.name
             direction = 'Outgoing'
-            local init = config.autoClose
+            if config.autoclosebool == true then
+                local init = config.autoClose
             opentime = init
                 repeat
                     sleep()
@@ -440,6 +455,8 @@ local function stargatedetect()
                 else
                     opentime = 0
                 end
+            end
+            
         elseif (event[1] == "stargate_chevron_engaged") then
             if redstonei ~= nil and event[4] == true then
                 redstonei.setOutput("north",true)
@@ -539,6 +556,11 @@ monitor.setTextColor(colors.lightGray)
 monitor.write(string.rep("=",w))
 if config.Locked == nil then
     config.Locked = true
+end
+if config.autoClose ~= nil then
+    config.autoclosebool =true
+else
+    config.autoclosebool = false
 end
 function loopmonitor()
     while true do
