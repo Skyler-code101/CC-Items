@@ -1,6 +1,7 @@
 
 
-
+return function()
+    
 local monitor = peripheral.find("monitor")
 local w,h = monitor.getSize()
 monitor.clear()
@@ -583,3 +584,5 @@ end
 parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate,loopmonitor)
 
 -- Helped By JajaSteele
+
+end
