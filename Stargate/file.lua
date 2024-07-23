@@ -547,13 +547,7 @@ function varUpdate()
         sleep(.1)
     end
 end
-monitor.clear()
-monitor.setCursorPos(1,1)
-monitor.setTextColor(colors.green)
-monitor.write("STGD Log")
-monitor.setCursorPos(1,2)
-monitor.setTextColor(colors.lightGray)
-monitor.write(string.rep("=",w))
+Name = config.name
 if config.Locked == nil then
     config.Locked = true
 end
@@ -576,7 +570,7 @@ function loopmonitor()
         monitor.write(string.rep(" ",w))
         monitor.setCursorPos(1,1)
         monitor.setTextColor(colors.green)
-        monitor.write("STGD Log")
+        monitor.write("STGD Log"..string.rep(" ",w-string.len(Name))..Name)
         monitor.setCursorPos(1,2)
         monitor.setTextColor(colors.lightGray)
         monitor.write(string.rep("=",w))
