@@ -12,7 +12,9 @@ else
 end
 function waitTillUpdate()
     while true do
-        local versionpubliccheck = textutils.unserialise(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/version").readAll())
+        local versionpubliccheckfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/version")
+        local versionpubliccheck = textutils.unserialise(versionpubliccheckfile.readAll())
+        versionpubliccheckfile.close()
         local versionlocalcheckfile = fs.open("version","r")
         local versionlocalcheck = textutils.unserialise(versionlocalcheckfile.readAll())
         versionlocalcheckfile.close()

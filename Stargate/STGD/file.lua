@@ -113,7 +113,7 @@ if args[1] == "config" or not fs.exists("/config_stgd.txt") then
         print("Unlock Key:")
     local key = read()
     local sufile = fs.open("startup","w")
-    sufile.write("local key = '"..key.."'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startup.lua").readAll())
+    sufile.write("local key = '"..key.."'\n"..http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/startupfile.lua").readAll())
     sufile.close()
     local peripherala = peripheral.find("drive")
     local foundinit = false
