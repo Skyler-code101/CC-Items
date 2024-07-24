@@ -1,6 +1,6 @@
 
 local file = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/STGD/file.lua").readAll()
-local versionpublic = textutils.unserialise(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/version").readAll())
+local versionpublic = textutils.unserialise(http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/STGD/version").readAll())
 
 local versionlocal
 if fs.exists("version") == true then
@@ -12,7 +12,7 @@ else
 end
 function waitTillUpdate()
     while true do
-        local versionpubliccheckfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/version")
+        local versionpubliccheckfile = http.get("https://github.com/Skyler-code101/CC-Items/raw/main/Stargate/STGD/version")
         local versionpubliccheck = textutils.unserialise(versionpubliccheckfile.readAll())
         versionpubliccheckfile.close()
         local versionlocalcheckfile = fs.open("version","r")
