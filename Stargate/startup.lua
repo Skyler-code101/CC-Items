@@ -6,7 +6,7 @@ if not commandToRun then
 
         description = "Specifies the command to run on startup",
 
-        default = "sgtdboot",
+        default = "stgdboot",
 
         type = "string"
 
@@ -18,7 +18,7 @@ if not commandToRun then
 
     settings.save()
 
-    commandToRun = "sgtdboot"
+    commandToRun = "stgdboot"
 
 end
 
@@ -33,8 +33,6 @@ local function doRun()
     while true do
 
         shell.run(commandToRun)
-
-        print("RESTARTING")
 
         os.startTimer(5)
 
