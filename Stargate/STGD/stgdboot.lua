@@ -26,10 +26,10 @@ function waitTillUpdate()
 end
 
 function runProgram()
-    shell.run("Storage/stgd.lua")
+    shell.run("run.lua")
 end
 if versionpublic.version ~= versionlocal.version and versionpublic.installable == true then
-    local localfile = fs.open("Storage/stgd.lua","w")
+    local localfile = fs.open("run.lua","w")
     localfile.write(file)
     localfile.close()
     local localversionwrite = fs.open("version","w")
