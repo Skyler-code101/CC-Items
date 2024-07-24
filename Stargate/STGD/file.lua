@@ -1,15 +1,16 @@
 
 
 
+shell.run("cd /")
 local monitor = peripheral.find("monitor")
 local w,h = monitor.getSize()
 monitor.clear()
 local ci = peripheral.find("advanced_crystal_interface")
 local stargateDisallowed = false
 local monitortext = {}
-if not fs.exists("/Storage/DiscordHook.lua") then
+if not fs.exists("/DiscordHook.lua") then
     local file = http.get("https://raw.githubusercontent.com/Wendelstein7/DiscordHook-CC/master/DiscordHook.lua")
-    local file2 = io.open("/Storage/DiscordHook.lua", "w")
+    local file2 = io.open("/DiscordHook.lua", "w")
     file2:write(file.readAll())
     file2:close()
     file.close()
