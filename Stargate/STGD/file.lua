@@ -609,4 +609,4 @@ function loopmonitor()
 end
 parallel.waitForAll(playerRadar, chatManager,stargatedetect, keybinds, printoutterm,varUpdate,loopmonitor)
 
--- Helped By JajaSteele
+-- Based On JajaSteele's CESS

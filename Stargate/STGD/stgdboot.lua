@@ -21,7 +21,7 @@ function waitTillUpdate()
         if versionpubliccheck.version ~= versionlocalcheck.version and versionpubliccheck.installable == true then
             os.reboot()
         end
-        sleep(.1)
+        sleep(1)
     end
 end
 
